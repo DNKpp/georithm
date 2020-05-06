@@ -11,3 +11,6 @@ add_executable(Test
 
 set_property(TARGET Test
     PROPERTY CXX_STANDARD 20)
+
+enable_testing()
+add_test(NAME Test COMMAND Test)
