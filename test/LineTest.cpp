@@ -27,8 +27,8 @@ TEST_CASE("Line compile and basic test", "[Line]")
 
 	line = Line<Vector2f>{ { 1.f, 1.f }, { 2.f, 2.f } };
 	REQUIRE(!line.isNull());
-	REQUIRE(line.direction() == Vector2f{ 1.f, 1.f });
-	REQUIRE(line.location() == Vector2f{ 2.f, 2.f });
+	REQUIRE(line.direction() == Vector2f{ 2.f, 2.f });
+	REQUIRE(line.location() == Vector2f{ 1.f, 1.f });
 
 	Vector2f vec{ 1.f, 1.f };
 	line.location() = vec;
