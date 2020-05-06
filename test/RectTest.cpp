@@ -79,11 +79,9 @@ TEST_CASE("Rect intersection test", "[Rect]")
 
 	auto bb = makeBoundingRect(rect);
 
-	REQUIRE(contains(rect, Vector2f::zero()));
+	//REQUIRE(contains(rect, Vector2f::zero()));
 
 	//lengthSq(rect.span());
-
-	auto test = std::begin(rect.span());
 	//std::array<int, 10> arr;
 	//zip_elements(std::begin(arr), std::end(arr), std::begin(arr), [](auto lhs, auto rhs) { return lhs + rhs; });
 
