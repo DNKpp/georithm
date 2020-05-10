@@ -105,7 +105,7 @@ namespace georithm
 		constexpr Vector& operator +=(const Vector<U, Dim>& other) noexcept
 		{
 			zip_elements(std::begin(m_Values), std::end(m_Values), std::begin(other.m_Values),
-				[](auto lhs, const auto& rhs) { return lhs += rhs; }
+				[](auto lhs, const auto& rhs) { return lhs += static_cast<T>(rhs); }
 			);
 			return *this;
 		}
@@ -115,7 +115,7 @@ namespace georithm
 		constexpr Vector& operator -=(const Vector<U, Dim>& other) noexcept
 		{
 			zip_elements(std::begin(m_Values), std::end(m_Values), std::begin(other.m_Values),
-				[](auto lhs, const auto& rhs) { return lhs -= rhs; }
+				[](auto lhs, const auto& rhs) { return lhs -= static_cast<T>(rhs); }
 			);
 			return *this;
 		}
@@ -125,7 +125,7 @@ namespace georithm
 		constexpr Vector& operator +=(const U& other) noexcept
 		{
 			std::for_each(std::begin(m_Values), std::end(m_Values),
-				[&other](auto& lhs) { return lhs += other; }
+				[&other](auto& lhs) { return lhs += static_cast<T>(other); }
 			);
 			return *this;
 		}
@@ -135,7 +135,7 @@ namespace georithm
 		constexpr Vector& operator -=(const U& other) noexcept
 		{
 			std::for_each(std::begin(m_Values), std::end(m_Values),
-				[&other](auto& lhs) { return lhs -= other; }
+				[&other](auto& lhs) { return lhs -= static_cast<T>(other); }
 			);
 			return *this;
 		}
@@ -145,7 +145,7 @@ namespace georithm
 		constexpr Vector& operator *=(const U& other) noexcept
 		{
 			std::for_each(std::begin(m_Values), std::end(m_Values),
-				[&other](auto& lhs) { return lhs *= other; }
+				[&other](auto& lhs) { return lhs *= static_cast<T>(other); }
 			);
 			return *this;
 		}
@@ -156,7 +156,7 @@ namespace georithm
 		{
 			assert(other != U(0));
 			std::for_each(std::begin(m_Values), std::end(m_Values),
-				[&other](auto& lhs) { return lhs /= other; }
+				[&other](auto& lhs) { return lhs /= static_cast<T>(other); }
 			);
 			return *this;
 		}
