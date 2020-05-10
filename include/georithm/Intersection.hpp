@@ -37,16 +37,16 @@ namespace georithm::detail
 	template <NDimensionalLineObject<2> TLine1, NDimensionalLineObject<2> TLine2>
 	constexpr std::tuple<LineIntersectionResult, typename GeometricTraits<TLine1>::ValueType> intersectionImpl(const TLine1& lhs, const TLine2& rhs) noexcept
 	{
+		// Credits goes here: http://www-cs.ccny.cuny.edu/~wolberg/capstone/intersection/Intersection%20point%20of%20two%20lines.html
 		assert(!isNull(lhs) && !isNull(rhs));
 
-		auto lhsBegin = lhs.location();
 		auto lhsDirection = lhs.direction();
-		auto lhsLocalRhsBegin = rhs.location() - lhsBegin;
+		auto rhsLocalLhsBegin = lhs.location() - rhs.location();
 		auto rhsDirection = rhs.direction();
 
-		auto denominator = lhsDirection[0] * rhsDirection[1] - lhsDirection[1] * rhsDirection[0];
-		auto numeratorA = rhsDirection[0] * lhsLocalRhsBegin[1] - rhsDirection[1] * lhsLocalRhsBegin[0];
-		auto numeratorB = lhsDirection[0] * lhsLocalRhsBegin[1] - lhsDirection[1] * lhsLocalRhsBegin[0];
+		auto denominator = rhsDirection[1] * lhsDirection[0] - rhsDirection[0] * lhsDirection[1];
+		auto numeratorA = rhsDirection[0] * rhsLocalLhsBegin[1] - rhsDirection[1] * rhsLocalLhsBegin[0];
+		auto numeratorB = lhsDirection[0] * rhsLocalLhsBegin[1] - lhsDirection[1] * rhsLocalLhsBegin[0];
 		if (denominator == 0 && (numeratorA == 0 || numeratorB == 0))
 			return { LineIntersectionResult::collinear, {} };
 
