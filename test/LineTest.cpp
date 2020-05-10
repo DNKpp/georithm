@@ -69,3 +69,82 @@ TEST_CASE("Line intersection test", "[Line]")
 	line2.direction().x() += 0.1f;
 	REQUIRE(intersects(line, line2));
 }
+
+TEST_CASE("Ray intersection test", "[Line]")
+{
+	using namespace georithm;
+
+	Ray<Vector<float, 2>> ray{ Vector{ 1.f, 2.f }, Vector{ 1.f, 1.f} };
+
+	auto interResult = intersection(ray, ray);
+	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::collinear);
+
+	Ray<Vector<float, 2>> ray2{ Vector{ 1.f, 2.f }, Vector{ -1.f, -1.f} };
+	interResult = intersection(ray, ray2);
+	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::collinear);
+
+	ray2.location() += ray2.direction() * 0.001;
+	interResult = intersection(ray, ray2);
+	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::parallel);
+
+	ray2.direction().x() -= 0.1f;
+	interResult = intersection(ray, ray2);
+	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::none);
+
+	ray2.location() = { 1.f, 2.f };
+	ray2.direction() = { -1.f, -1.f };
+	ray2.direction().x() -= 0.1f;
+	interResult = intersection(ray, ray2);
+	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::intersecting);
+	REQUIRE(std::get<1>(interResult) == Approx(0));
+
+	ray2.direction() = { -1.f, -1.f };
+	ray2.location().x() += 1;
+	interResult = intersection(ray, ray2);
+	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::parallel);
+}
+
+TEST_CASE("Segment intersection test", "[Line]")
+{
+	using namespace georithm;
+
+	Segment<Vector<float, 2>> segment{ Vector{ 1.f, 2.f }, Vector{ 1.f, 1.f} };
+
+	auto interResult = intersection(segment, segment);
+	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::collinear);
+
+	Segment<Vector<float, 2>> segment2{ Vector{ 1.f, 2.f }, Vector{ -1.f, -1.f} };
+	interResult = intersection(segment, segment2);
+	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::collinear);
+
+	segment2.location() += segment2.direction() * 0.001;
+	interResult = intersection(segment, segment2);
+	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::parallel);
+
+	segment2.direction().x() -= 0.1f;
+	interResult = intersection(segment, segment2);
+	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::none);
+
+	segment2.location() = { 1.f, 2.f };
+	segment2.direction() = { -1.f, -1.f };
+	segment2.direction().x() -= 0.1f;
+	interResult = intersection(segment, segment2);
+	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::intersecting);
+	REQUIRE(std::get<1>(interResult) == Approx(0));
+
+	segment2.direction() = { -1.f, -1.f };
+	segment2.location().x() += 1;
+	interResult = intersection(segment, segment2);
+	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::parallel);
+
+	segment2.location() = segment.secondVertex();
+	segment2.direction() = segment.direction();
+	segment2.direction().x() -= 0.1f;
+	interResult = intersection(segment, segment2);
+	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::intersecting);
+	REQUIRE(std::get<1>(interResult) == Approx(1));
+
+	segment2.location() += segment.direction() * 0.001;
+	interResult = intersection(segment, segment2);
+	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::none);
+}
