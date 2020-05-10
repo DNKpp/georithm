@@ -14,9 +14,9 @@
 #include <numeric>
 #include <cassert>
 
+#include "ArithmeticOperators.hpp"
 #include "Concepts.hpp"
 #include "RangeAlgorithms.hpp"
-#include "ArithmeticOperators.hpp"
 
 namespace georithm
 {
@@ -274,6 +274,15 @@ namespace georithm
 	constexpr U length(const TVector& vector) noexcept
 	{
 		return static_cast<U>(std::sqrt(lengthSq(vector)));
+	}
+
+	template <VectorObject TVector>
+	constexpr TVector normalize(TVector vector) noexcept
+	{
+		assert(vector != TVector::zero());
+
+		auto length = georithm::length(vector);
+		return vector /= length;
 	}
 }
 

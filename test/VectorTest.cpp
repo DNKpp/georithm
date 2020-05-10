@@ -67,5 +67,7 @@ TEST_CASE("Vector algorithm test", "[Vector]")
 	REQUIRE(scalarProduct(vec, vec) == lengthSq(vec));
 	REQUIRE(length(vec) == 2);	// sqrt converted to int
 	REQUIRE(length<double>(vec) == Approx(std::sqrt((vec.x() * vec.x() + vec.y() * vec.y()))));
+
+	REQUIRE(length(normalize(vec)) == Approx(1));
 }
 
