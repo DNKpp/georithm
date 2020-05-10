@@ -24,7 +24,7 @@ namespace georithm::detail
 	{
 		if constexpr (TLine::Type == LineType::segment)
 		{
-			return 0 <= dist && dist < 1;
+			return 0 <= dist && dist <= 1;
 		}
 		else if constexpr (TLine::Type == LineType::ray)
 		{
