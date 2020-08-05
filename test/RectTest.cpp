@@ -77,9 +77,7 @@ TEST_CASE("Rect intersection test", "[Rect]")
 
 	forEachIntersection(rect, rect.edge(0), [](const auto& line, auto dist) {});
 
-	auto bb = makeBoundingRect(rect);
-
-	//REQUIRE(contains(rect, Vector2f::zero()));
+	REQUIRE(contains(rect, rect.span()));
 
 	//lengthSq(rect.span());
 	//std::array<int, 10> arr;
@@ -104,4 +102,20 @@ TEST_CASE("Rect intersection test", "[Rect]")
 
 	//line2.direction().x() += 0.1f;
 	//REQUIRE(intersects(line, line2));
+}
+
+TEST_CASE("Rect make bounding rect test", "[Rect]")
+{
+	using namespace georithm;
+
+	using Vector2 = Vector<int, 2>;
+	Rect<Vector2> rect{ {1, 1} };
+
+	auto bb = makeBoundingRect(rect);
+
+	REQUIRE(!(rect != bb));
+
+	Rect<Vector2, component::Translation<Vector2>> transRect{ { 10, 10 }, Vector2{ -5, -5 } };
+	bb = makeBoundingRect(transRect);
+	REQUIRE(!(transRect != bb));
 }
