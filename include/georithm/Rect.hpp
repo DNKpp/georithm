@@ -38,6 +38,16 @@ namespace georithm
 		constexpr Rect& operator =(const Rect&) noexcept = default;
 
 		constexpr bool operator ==(const Rect& other) const noexcept = default;
+		template <class... UTransformComponents>
+		constexpr bool operator ==(const Rect<TVectorType, UTransformComponents...>& other) const noexcept
+		{
+			for (VertexIndex_t i = 0; i < vertexCount(); ++i)
+			{
+				if (vertex(i) != other.vertex(i))
+					return false;
+			}
+			return true;
+		}
 
 		constexpr VertexIndex_t vertexCount() const noexcept
 		{
