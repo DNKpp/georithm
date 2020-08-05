@@ -122,9 +122,9 @@ namespace georithm
 	concept Cardinality = std::convertible_to<decltype(Value), DimensionDescriptor_t> && (Value > 0);
 
 	template <class T>
-	concept VectorObject = requires (const std::remove_cvref_t<T> & vec)
+	concept VectorObject = requires (const std::remove_cvref_t<T>& vec)
 	{
-		{ T::ValueType };
+		typename T::ValueType;
 		{ T::Dimensions }->std::convertible_to<DimensionDescriptor_t>;
 		{ vec[std::declval<DimensionDescriptor_t>()] }->std::convertible_to<typename T::ValueType>;
 	};
@@ -136,16 +136,16 @@ namespace georithm
 	concept invocable_r = std::is_invocable_r_v<R, Fn, Args...>;
 
 	template <class T, class ExpectedVectorType>
-	concept TransformComponent = requires (const std::remove_cvref_t<T> & component)
+	concept TransformComponent = requires (const std::remove_cvref_t<T>& component)
 	{
-		{ T::VectorType };
+		typename T::VectorType;
 		{ component.transform(std::declval<ExpectedVectorType>()) }->std::convertible_to<ExpectedVectorType>;
 	};
 
 	template <class T>
 	concept GeometricObject = requires (const std::remove_cvref_t<T> & object)
 	{
-		{ T::VectorType };
+		typename T::VectorType;
 		{ isNull(object) }->std::convertible_to<bool>;
 	};
 
