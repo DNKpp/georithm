@@ -11,6 +11,7 @@
 
 #include <array>
 #include <algorithm>
+#include <cmath>
 #include <numeric>
 #include <cassert>
 
