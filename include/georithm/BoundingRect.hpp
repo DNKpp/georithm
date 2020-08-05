@@ -13,6 +13,7 @@
 #include "Defines.hpp"
 #include "GeometricTraits.hpp"
 #include "Rect.hpp"
+#include "Utility.hpp"
 #include "component/Translation.hpp"
 
 namespace georithm::detail
