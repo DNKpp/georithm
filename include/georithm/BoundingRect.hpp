@@ -27,8 +27,8 @@ namespace georithm::detail
 
 		using Vector_t = typename GeometricTraits<Poly>::VectorType;
 		using NumericLimits_t = std::numeric_limits<typename Vector_t::ValueType>;
-		Vector_t topLeft{ NumericLimits_t::min(), NumericLimits_t::min() };
-		Vector_t bottomRight{ NumericLimits_t::max(), NumericLimits_t::max() };
+		Vector_t topLeft{ NumericLimits_t::max(), NumericLimits_t::max() };
+		Vector_t bottomRight{ NumericLimits_t::min(), NumericLimits_t::min() };
 
 		for (VertexIndex_t i = 0; i < vertexCount(polygon); ++i)
 		{
@@ -38,6 +38,8 @@ namespace georithm::detail
 			bottomRight[0] = std::max(bottomRight[0], v[0]);
 			bottomRight[1] = std::max(bottomRight[1], v[1]);
 		}
+
+		assert(topLeft[0] <= bottomRight[0] && topLeft[1] <= bottomRight[1]);
 		return { bottomRight - topLeft, topLeft };
 	}
 }
