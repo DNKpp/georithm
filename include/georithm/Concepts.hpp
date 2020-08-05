@@ -12,6 +12,8 @@
 #include <concepts>
 #include <cstdint>
 #include <iterator>
+#include <type_traits>
+#include <utility>
 
 #include "Defines.hpp"
 #include "GeometricTraits.hpp"
@@ -63,7 +65,7 @@ namespace georithm
 	template <class T, class U = T>
 	concept Multiplicable = MultiplyAssignable<T, U> && requires (T lhs, U rhs)
 	{
-		{ lhs * rhs } -> std::convertible_to<T>;
+		{ lhs* rhs } -> std::convertible_to<T>;
 	};
 
 	template <class T, class U = T>
@@ -75,21 +77,21 @@ namespace georithm
 	template <class T, class U = T>
 	concept Moduloable = ModuloAssignable<T, U> && requires (T lhs, U rhs)
 	{
-		{ lhs % rhs }->std::convertible_to<T>;
+		{ lhs% rhs }->std::convertible_to<T>;
 	};
 
 	template <class TGeo1, class TGeo2>
 	concept EqualDimensions = (GeometricTraits<TGeo1>::Dimensions == GeometricTraits<TGeo2>::Dimensions);
 
 	template <class T>
-	concept ForwardIteratable = requires (std::remove_cvref_t<T>& object)
+	concept ForwardIteratable = requires (std::remove_cvref_t<T> & object)
 	{
 		{ std::begin(object) }->std::forward_iterator;
 		{ object.end() }->std::sentinel_for<decltype(std::begin(object))>;
 	};
 
 	template <class T>
-	concept ConstForwardIteratable = requires (const std::remove_cvref_t<T>& object)
+	concept ConstForwardIteratable = requires (const std::remove_cvref_t<T> & object)
 	{
 		{ std::begin(object) }->std::forward_iterator;
 		{ object.cbegin() }->std::forward_iterator;
@@ -120,7 +122,7 @@ namespace georithm
 	concept Cardinality = std::convertible_to<decltype(Value), DimensionDescriptor_t> && (Value > 0);
 
 	template <class T>
-	concept VectorObject = requires (const std::remove_reference_t<T>& vec)
+	concept VectorObject = requires (const std::remove_cvref_t<T> & vec)
 	{
 		{ T::ValueType };
 		{ T::Dimensions }->std::convertible_to<DimensionDescriptor_t>;
@@ -134,14 +136,14 @@ namespace georithm
 	concept invocable_r = std::is_invocable_r_v<R, Fn, Args...>;
 
 	template <class T, class ExpectedVectorType>
-	concept TransformComponent = requires (const std::remove_reference_t<T>& component)
+	concept TransformComponent = requires (const std::remove_cvref_t<T> & component)
 	{
 		{ T::VectorType };
 		{ component.transform(std::declval<ExpectedVectorType>()) }->std::convertible_to<ExpectedVectorType>;
 	};
 
 	template <class T>
-	concept GeometricObject = requires (const std::remove_reference_t<T>& object)
+	concept GeometricObject = requires (const std::remove_cvref_t<T> & object)
 	{
 		{ T::VectorType };
 		{ isNull(object) }->std::convertible_to<bool>;
@@ -151,7 +153,7 @@ namespace georithm
 	concept NDimensionalObject = GeometricObject<T> && (T::VectorType::Dimensions == Dim);
 
 	template <class T>
-	concept LineObject = GeometricObject<T> && requires(const std::remove_reference_t<T>& line)
+	concept LineObject = GeometricObject<T> && requires(const std::remove_cvref_t<T> & line)
 	{
 		{ T::Type };
 		{ line.firstVertex() }->std::convertible_to<typename T::VectorType>;
@@ -162,7 +164,7 @@ namespace georithm
 	concept NDimensionalLineObject = NDimensionalObject<T, Dim> && LineObject<T>;
 
 	template <class T>
-	concept PolygonalObject = GeometricObject<T> && requires (const std::remove_reference_t<T>& object)
+	concept PolygonalObject = GeometricObject<T> && requires (const std::remove_cvref_t<T> & object)
 	{
 		{ object.vertexCount() } -> std::convertible_to<VertexIndex_t>;
 		{ object.edgeCount() } -> std::convertible_to<EdgeIndex_t>;
