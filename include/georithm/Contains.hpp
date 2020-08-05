@@ -51,7 +51,7 @@ namespace georithm::detail
 			[&count](const auto& line, auto dist) { ++count; }
 		);
 		
-		return count % 2 == 1;
+		return (count & 1) != 0;
 	}
 
 	//template <NDimensionalPolygonalObject<2> Poly, NDimensionalLineObject<2> Line>
