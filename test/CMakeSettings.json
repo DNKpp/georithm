@@ -31,7 +31,8 @@
       "remoteCopyBuildOutput": false,
       "remoteCopySourcesMethod": "rsync",
       "addressSanitizerRuntimeFlags": "detect_leaks=0",
-      "variables": []
+      "variables": [],
+      "intelliSenseMode": "linux-gcc-x64"
     }
   ]
 }
