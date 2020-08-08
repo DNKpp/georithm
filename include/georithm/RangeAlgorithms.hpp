@@ -12,10 +12,18 @@
 #include <concepts>
 #include <iterator>
 
+#include "Concepts.hpp"
+
+namespace georithm::detail
+{
+	template <class Fn, class ForwardIt, class InputIt>
+	concept ZipElementsInvocable = invocable_r<Fn, typename std::iterator_traits<ForwardIt>::value_type, typename std::iterator_traits<ForwardIt>::value_type,
+		typename std::iterator_traits<InputIt>::value_type>;
+}
+
 namespace georithm
 {
-	template <std::forward_iterator ForwardIt, std::sentinel_for<ForwardIt> ForwardItSentinel, std::input_iterator InputIt,
-		invocable_r<typename std::iterator_traits<ForwardIt>::value_type, typename std::iterator_traits<ForwardIt>::value_type, typename std::iterator_traits<InputIt>::value_type> BinaryOp>
+	template <std::forward_iterator ForwardIt, std::sentinel_for<ForwardIt> ForwardItSentinel, std::input_iterator InputIt, detail::ZipElementsInvocable<ForwardIt, InputIt> BinaryOp>
 	constexpr void zip_elements(ForwardIt first, ForwardItSentinel last, InputIt secFirst, BinaryOp op)
 	{
 		while (first != last)
