@@ -1,4 +1,3 @@
-
 //          Copyright Dominic Koepke 2017 - 2020.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -22,11 +21,11 @@ namespace georithm::detail
 	template <LineObject TLine>
 	constexpr bool isWithinRange(const TLine& line, typename GeometricTraits<TLine>::ValueType dist) noexcept
 	{
-		if constexpr (TLine::Type == LineType::segment)
+		if constexpr (TLine::type == LineType::segment)
 		{
 			return 0 <= dist && dist <= 1;
 		}
-		else if constexpr (TLine::Type == LineType::ray)
+		else if constexpr (TLine::type == LineType::ray)
 		{
 			return 0 <= dist;
 		}
@@ -35,7 +34,8 @@ namespace georithm::detail
 	}
 
 	template <NDimensionalLineObject<2> TLine1, NDimensionalLineObject<2> TLine2>
-	constexpr std::tuple<LineIntersectionResult, typename GeometricTraits<TLine1>::ValueType> intersectionImpl(const TLine1& lhs, const TLine2& rhs) noexcept
+	constexpr std::tuple<LineIntersectionResult, typename GeometricTraits<TLine1>::ValueType> intersectionImpl(
+		const TLine1& lhs, const TLine2& rhs) noexcept
 	{
 		// Credits goes here: http://www-cs.ccny.cuny.edu/~wolberg/capstone/intersection/Intersection%20point%20of%20two%20lines.html
 		assert(!isNull(lhs) && !isNull(rhs));
@@ -61,14 +61,16 @@ namespace georithm::detail
 		return { LineIntersectionResult::none, {} };
 	}
 
-	template <NDimensionalLineObject<2> TLine, NDimensionalPolygonalObject<2> TPolygon, std::invocable<TLine, typename GeometricTraits<TLine>::ValueType> Callback>
+	template <NDimensionalLineObject<2> TLine, NDimensionalPolygonalObject<2> TPolygon,
+		std::invocable<TLine, typename GeometricTraits<TLine>::ValueType> Callback>
 	constexpr void forEachIntersectionImpl(const TLine& line, const TPolygon& polygon, Callback callback) noexcept
 	{
 		assert(!isNull(line) && !isNull(polygon));
 		for (auto i = 0; i < edgeCount(polygon); ++i)
 		{
 			auto seg = edge(polygon, i);
-			if (auto [intersectionResult, dist] = intersection(seg, line); intersectionResult == LineIntersectionResult::intersecting)
+			if (auto [intersectionResult, dist] = intersection(seg, line);
+				intersectionResult == LineIntersectionResult::intersecting)
 			{
 				// ToDo: std::invoke(callback, dist)
 				callback(seg, dist);
@@ -77,18 +79,19 @@ namespace georithm::detail
 	}
 
 	template <NDimensionalLineObject<2> TLine, NDimensionalPolygonalObject<2> TPolygon>
-	constexpr std::optional<typename GeometricTraits<TLine>::ValueType> intersectionImpl(const TLine& line, const TPolygon& polygon) noexcept
+	constexpr std::optional<typename GeometricTraits<TLine>::ValueType> intersectionImpl(
+		const TLine& line, const TPolygon& polygon) noexcept
 	{
 		assert(!isNull(line) && !isNull(polygon));
 
 		using Value_t = typename GeometricTraits<TLine>::ValueType;
 		std::optional<Value_t> smallestDist;
 		forEachIntersectionImpl(line, polygon,
-			[&smallestDist](const TLine& line, Value_t dist)
-			{
-				if (!smallestDist || std::abs(dist) < std::abs(*smallestDist))
-					smallestDist = dist;
-			}
+								[&smallestDist](const TLine& line, Value_t dist)
+								{
+									if (!smallestDist || std::abs(dist) < std::abs(*smallestDist))
+										smallestDist = dist;
+								}
 		);
 		return smallestDist;
 	}

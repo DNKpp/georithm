@@ -1,4 +1,3 @@
-
 //          Copyright Dominic Koepke 2017 - 2020.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -10,6 +9,7 @@
 #pragma once
 
 #include <cassert>
+#include <compare>
 
 #include "Concepts.hpp"
 #include "Defines.hpp"
@@ -17,7 +17,7 @@
 
 namespace georithm
 {
-	template<class TVectorType, class... TTransformComponent>
+	template <class TVectorType, class... TTransformComponent>
 	requires (TransformComponent<TTransformComponent, TVectorType> && ...)
 	class Rect :
 		public TTransformComponent...
@@ -26,20 +26,26 @@ namespace georithm
 		using VectorType = TVectorType;
 
 		constexpr Rect() noexcept = default;
-		
-		template <class... Args>
-		constexpr Rect(const VectorType& span, Args&&... args) noexcept :
-			m_Span{ span },
-			TTransformComponent{ std::forward<Args>(args) }...
+		/*ToDo: c++20
+		constexpr */
+		~Rect() noexcept = default;
+
+		template <class... TArgs>
+		constexpr Rect(const VectorType& span, TArgs&&... args) noexcept :
+			TTransformComponent{ std::forward<TArgs>(args) }...,
+			m_Span{ span }
 		{
 		}
 
 		constexpr Rect(const Rect&) noexcept = default;
 		constexpr Rect& operator =(const Rect&) noexcept = default;
+		constexpr Rect(Rect&&) noexcept = default;
+		constexpr Rect& operator =(Rect&&) noexcept = default;
 
 		constexpr bool operator ==(const Rect& other) const noexcept = default;
-		template <class... UTransformComponents>
-		constexpr bool operator ==(const Rect<TVectorType, UTransformComponents...>& other) const noexcept
+
+		template <class... T2TransformComponents>
+		constexpr bool operator ==(const Rect<TVectorType, T2TransformComponents...>& other) const noexcept
 		{
 			for (VertexIndex_t i = 0; i < vertexCount(); ++i)
 			{
@@ -49,28 +55,28 @@ namespace georithm
 			return true;
 		}
 
-		constexpr VertexIndex_t vertexCount() const noexcept
+		[[nodiscard]] constexpr VertexIndex_t vertexCount() const noexcept
 		{
 			return 4u;
 		}
 
-		constexpr VertexIndex_t edgeCount() const noexcept
+		[[nodiscard]] constexpr VertexIndex_t edgeCount() const noexcept
 		{
 			return 4u;
 		}
 
-		constexpr VectorType vertex(VertexIndex_t index) const noexcept
+		[[nodiscard]] constexpr VectorType vertex(VertexIndex_t index) const noexcept
 		{
 			assert(0u <= index && index < vertexCount() && !isNull());
 
 			auto vertex = VectorType::zero();
-			vertex.x() = (index == 1 || index == 2) ? m_Span.x() : vertex.x();
-			vertex.y() = (index == 2 || index == 3) ? m_Span.y() : vertex.y();
+			vertex.x() = index == 1 || index == 2 ? m_Span.x() : vertex.x();
+			vertex.y() = index == 2 || index == 3 ? m_Span.y() : vertex.y();
 			((vertex = static_cast<const TTransformComponent&>(*this).transform(vertex)), ...);
 			return vertex;
 		}
 
-		constexpr Segment<VectorType> edge(EdgeIndex_t index) const noexcept
+		[[nodiscard]] constexpr Segment<VectorType> edge(EdgeIndex_t index) const noexcept
 		{
 			assert(0u <= index && index < edgeCount() && !isNull());
 
@@ -79,19 +85,19 @@ namespace georithm
 			return { first, second - first };
 		}
 
-		constexpr const VectorType& span() const noexcept
+		[[nodiscard]] constexpr const VectorType& span() const noexcept
 		{
 			return m_Span;
 		}
 
-		constexpr VectorType& span() noexcept
+		[[nodiscard]] constexpr VectorType& span() noexcept
 		{
 			return m_Span;
 		}
 
-		constexpr bool isNull() const noexcept
+		[[nodiscard]] constexpr bool isNull() const noexcept
 		{
-			return m_Span.x() == 0 || m_Span.y() == 0;
+			return m_Span == VectorType::zero();
 		}
 
 	private:

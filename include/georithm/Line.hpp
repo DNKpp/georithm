@@ -1,4 +1,3 @@
-
 //          Copyright Dominic Koepke 2017 - 2020.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -9,21 +8,24 @@
 
 #pragma once
 
-#include <cassert>
+#include <compare>
 
 #include "Defines.hpp"
 #include "Concepts.hpp"
 
 namespace georithm
 {
-	template<VectorObject TVectorType, LineType LType>
+	template <VectorObject TVectorType, LineType TLineType>
 	class BasicLine
 	{
 	public:
 		using VectorType = TVectorType;
-		constexpr static LineType Type{ LType };
+		constexpr static LineType type{ TLineType };
 
 		constexpr BasicLine() noexcept = default;
+		/*ToDo: c++20
+		constexpr */
+		~BasicLine() noexcept = default;
 
 		constexpr BasicLine(const VectorType& location, const VectorType& direction) noexcept :
 			m_Location{ location },
@@ -33,40 +35,42 @@ namespace georithm
 
 		constexpr BasicLine(const BasicLine&) noexcept = default;
 		constexpr BasicLine& operator =(const BasicLine&) noexcept = default;
+		constexpr BasicLine(BasicLine&&) noexcept = default;
+		constexpr BasicLine& operator =(BasicLine&&) noexcept = default;
 
 		constexpr bool operator ==(const BasicLine& other) const noexcept = default;
 
-		constexpr const VectorType& location() const noexcept
+		[[nodiscard]] constexpr const VectorType& location() const noexcept
 		{
 			return m_Location;
 		}
 
-		constexpr VectorType& location() noexcept
+		[[nodiscard]] constexpr VectorType& location() noexcept
 		{
 			return m_Location;
 		}
 
-		constexpr const VectorType& direction() const noexcept
+		[[nodiscard]] constexpr const VectorType& direction() const noexcept
 		{
 			return m_Direction;
 		}
 
-		constexpr VectorType& direction() noexcept
+		[[nodiscard]] constexpr VectorType& direction() noexcept
 		{
 			return m_Direction;
 		}
 
-		constexpr VectorType firstVertex() const noexcept
+		[[nodiscard]] constexpr VectorType firstVertex() const noexcept
 		{
 			return m_Location;
 		}
 
-		constexpr VectorType secondVertex() const noexcept
+		[[nodiscard]] constexpr VectorType secondVertex() const noexcept
 		{
 			return m_Location + m_Direction;
 		}
 
-		constexpr bool isNull() const noexcept
+		[[nodiscard]] constexpr bool isNull() const noexcept
 		{
 			return m_Direction == VectorType::zero();
 		}

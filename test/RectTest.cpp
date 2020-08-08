@@ -13,6 +13,7 @@
 #include "../include/georithm/Rect.hpp"
 #include "../include/georithm/BoundingRect.hpp"
 #include "../include/georithm/Contains.hpp"
+#include "../include/georithm/Utility.hpp"
 
 //TEST_CASE("Line constexpr compile test", "[Line]")
 //{

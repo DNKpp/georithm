@@ -32,7 +32,8 @@ namespace georithm
 
 		constexpr Vector() noexcept = default;
 		/*ToDo: c++20
-		constexpr */~Vector() noexcept = default;
+		constexpr */
+		~Vector() noexcept = default;
 
 		constexpr Vector(const Vector&) noexcept = default;
 		constexpr Vector& operator =(const Vector&) noexcept = default;
@@ -111,7 +112,7 @@ namespace georithm
 		constexpr Vector& operator +=(const Vector<T2, Dim>& other) noexcept
 		{
 			zip_elements(std::begin(m_Values), std::end(m_Values), std::begin(other.m_Values),
-			             [](auto lhs, const auto& rhs) { return lhs += static_cast<T>(rhs); }
+						[](auto lhs, const auto& rhs) { return lhs += static_cast<T>(rhs); }
 			);
 			return *this;
 		}
@@ -121,7 +122,7 @@ namespace georithm
 		constexpr Vector& operator -=(const Vector<T2, Dim>& other) noexcept
 		{
 			zip_elements(std::begin(m_Values), std::end(m_Values), std::begin(other.m_Values),
-			             [](auto lhs, const auto& rhs) { return lhs -= static_cast<T>(rhs); }
+						[](auto lhs, const auto& rhs) { return lhs -= static_cast<T>(rhs); }
 			);
 			return *this;
 		}
@@ -131,7 +132,7 @@ namespace georithm
 		constexpr Vector& operator +=(const T2& other) noexcept
 		{
 			std::for_each(std::begin(m_Values), std::end(m_Values),
-			              [&other](auto& lhs) { return lhs += static_cast<T>(other); }
+						[&other](auto& lhs) { return lhs += static_cast<T>(other); }
 			);
 			return *this;
 		}
@@ -141,7 +142,7 @@ namespace georithm
 		constexpr Vector& operator -=(const T2& other) noexcept
 		{
 			std::for_each(std::begin(m_Values), std::end(m_Values),
-			              [&other](auto& lhs) { return lhs -= static_cast<T>(other); }
+						[&other](auto& lhs) { return lhs -= static_cast<T>(other); }
 			);
 			return *this;
 		}
@@ -151,7 +152,7 @@ namespace georithm
 		constexpr Vector& operator *=(const T2& other) noexcept
 		{
 			std::for_each(std::begin(m_Values), std::end(m_Values),
-			              [&other](auto& lhs) { return lhs *= static_cast<T>(other); }
+						[&other](auto& lhs) { return lhs *= static_cast<T>(other); }
 			);
 			return *this;
 		}
@@ -162,7 +163,7 @@ namespace georithm
 		{
 			assert(other != T2(0));
 			std::for_each(std::begin(m_Values), std::end(m_Values),
-			              [&other](auto& lhs) { return lhs /= static_cast<T>(other); }
+						[&other](auto& lhs) { return lhs /= static_cast<T>(other); }
 			);
 			return *this;
 		}
@@ -173,7 +174,7 @@ namespace georithm
 		{
 			assert(other != T2(0));
 			std::for_each(std::begin(m_Values), std::end(m_Values),
-			              [&other](auto& lhs) { return lhs %= other; }
+						[&other](auto& lhs) { return lhs %= other; }
 			);
 			return *this;
 		}
@@ -257,14 +258,14 @@ namespace georithm
 	constexpr typename TVector::ValueType lengthSq(const TVector& vector) noexcept
 	{
 		return std::accumulate(std::cbegin(vector), std::cend(vector), typename TVector::ValueType(0),
-		                       [](auto value, const auto& element) { return value + element * element; }
+								[](auto value, const auto& element) { return value + element * element; }
 		);
 	}
 
 	template <VectorObject TVector1, VectorObject TVector2>
 	requires ConstForwardIteratable<TVector1> && ConstForwardIteratable<TVector2> &&
-		(TVector1::Dimensions == TVector2::Dimensions) &&
-		Multiplicable<typename TVector1::ValueType, typename TVector2::ValueType>
+	(TVector1::Dimensions == TVector2::Dimensions) &&
+	Multiplicable<typename TVector1::ValueType, typename TVector2::ValueType>
 	constexpr typename TVector1::ValueType scalarProduct(const TVector1& lhs, const TVector2& rhs) noexcept
 	{
 		return std::inner_product(std::cbegin(lhs), std::cend(lhs), std::cbegin(rhs), typename TVector1::ValueType(0));

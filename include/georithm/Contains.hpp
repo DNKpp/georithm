@@ -1,4 +1,3 @@
-
 //          Copyright Dominic Koepke 2017 - 2020.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -28,7 +27,7 @@ namespace georithm::detail
 		using Value_t = typename Traits_t::ValueType;
 		Ray<Vector_t> ray{ vector, { Value_t(1), Value_t(0) } };
 
-		int count = 0;
+		auto count = 0;
 		//for (VertexIndex_t i = 0; i < vertexCount(polygon); ++i)
 		//{
 		//	auto segment = edge(polygon, i);
@@ -48,9 +47,9 @@ namespace georithm::detail
 		//	}
 		//}
 		forEachIntersection(polygon, ray,
-			[&count](const auto& line, auto dist) { ++count; }
+							[&count](const auto& line, auto dist) { ++count; }
 		);
-		
+
 		return (count & 1) != 0;
 	}
 
