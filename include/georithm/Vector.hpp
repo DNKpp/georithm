@@ -64,7 +64,7 @@ namespace georithm
 
 		template <DimensionDescriptor_t Dim2 = Dim>
 		requires (1 <= Dim2)
-		constexpr const ValueType& x() const noexcept
+		[[nodiscard]] constexpr const ValueType& x() const noexcept
 		{
 			return m_Values[0];
 		}
@@ -78,7 +78,7 @@ namespace georithm
 
 		template <DimensionDescriptor_t Dim2 = Dim>
 		requires (2 <= Dim2)
-		constexpr const ValueType& y() const noexcept
+		[[nodiscard]] constexpr const ValueType& y() const noexcept
 		{
 			return m_Values[1];
 		}
@@ -92,7 +92,7 @@ namespace georithm
 
 		template <DimensionDescriptor_t Dim2 = Dim>
 		requires (3 <= Dim2)
-		constexpr const ValueType& z() const noexcept
+		[[nodiscard]] constexpr const ValueType& z() const noexcept
 		{
 			return m_Values[2];
 		}
@@ -106,9 +106,9 @@ namespace georithm
 
 		constexpr bool operator ==(const Vector& other) const noexcept = default;
 
-		template <class U>
-		requires Addable<T, U>
-		constexpr Vector& operator +=(const Vector<U, Dim>& other) noexcept
+		template <class T2>
+		requires Addable<T, T2>
+		constexpr Vector& operator +=(const Vector<T2, Dim>& other) noexcept
 		{
 			zip_elements(std::begin(m_Values), std::end(m_Values), std::begin(other.m_Values),
 			             [](auto lhs, const auto& rhs) { return lhs += static_cast<T>(rhs); }
@@ -116,9 +116,9 @@ namespace georithm
 			return *this;
 		}
 
-		template <class U>
-		requires Subtractable<T, U>
-		constexpr Vector& operator -=(const Vector<U, Dim>& other) noexcept
+		template <class T2>
+		requires Subtractable<T, T2>
+		constexpr Vector& operator -=(const Vector<T2, Dim>& other) noexcept
 		{
 			zip_elements(std::begin(m_Values), std::end(m_Values), std::begin(other.m_Values),
 			             [](auto lhs, const auto& rhs) { return lhs -= static_cast<T>(rhs); }
@@ -126,9 +126,9 @@ namespace georithm
 			return *this;
 		}
 
-		template <class U>
-		requires Addable<T, U>
-		constexpr Vector& operator +=(const U& other) noexcept
+		template <class T2>
+		requires Addable<T, T2>
+		constexpr Vector& operator +=(const T2& other) noexcept
 		{
 			std::for_each(std::begin(m_Values), std::end(m_Values),
 			              [&other](auto& lhs) { return lhs += static_cast<T>(other); }
@@ -136,9 +136,9 @@ namespace georithm
 			return *this;
 		}
 
-		template <class U>
-		requires Subtractable<T, U>
-		constexpr Vector& operator -=(const U& other) noexcept
+		template <class T2>
+		requires Subtractable<T, T2>
+		constexpr Vector& operator -=(const T2& other) noexcept
 		{
 			std::for_each(std::begin(m_Values), std::end(m_Values),
 			              [&other](auto& lhs) { return lhs -= static_cast<T>(other); }
@@ -146,9 +146,9 @@ namespace georithm
 			return *this;
 		}
 
-		template <class U>
-		requires Multiplicable<T, U>
-		constexpr Vector& operator *=(const U& other) noexcept
+		template <class T2>
+		requires Multiplicable<T, T2>
+		constexpr Vector& operator *=(const T2& other) noexcept
 		{
 			std::for_each(std::begin(m_Values), std::end(m_Values),
 			              [&other](auto& lhs) { return lhs *= static_cast<T>(other); }
@@ -156,39 +156,39 @@ namespace georithm
 			return *this;
 		}
 
-		template <class U>
-		requires Divisable<T, U>
-		constexpr Vector& operator /=(const U& other) noexcept
+		template <class T2>
+		requires Divisable<T, T2>
+		constexpr Vector& operator /=(const T2& other) noexcept
 		{
-			assert(other != U(0));
+			assert(other != T2(0));
 			std::for_each(std::begin(m_Values), std::end(m_Values),
 			              [&other](auto& lhs) { return lhs /= static_cast<T>(other); }
 			);
 			return *this;
 		}
 
-		template <class U>
-		requires Moduloable<T, U>
-		constexpr Vector& operator %=(const U& other) noexcept
+		template <class T2>
+		requires Moduloable<T, T2>
+		constexpr Vector& operator %=(const T2& other) noexcept
 		{
-			assert(other != U(0));
+			assert(other != T2(0));
 			std::for_each(std::begin(m_Values), std::end(m_Values),
 			              [&other](auto& lhs) { return lhs %= other; }
 			);
 			return *this;
 		}
 
-		constexpr auto begin() noexcept
+		[[nodiscard]] constexpr auto begin() noexcept
 		{
 			return std::begin(m_Values);
 		}
 
-		constexpr auto begin() const noexcept
+		[[nodiscard]] constexpr auto begin() const noexcept
 		{
 			return std::begin(m_Values);
 		}
 
-		constexpr auto cbegin() const noexcept
+		[[nodiscard]] constexpr auto cbegin() const noexcept
 		{
 			return std::cbegin(m_Values);
 		}
@@ -198,12 +198,12 @@ namespace georithm
 			return std::end(m_Values);
 		}
 
-		constexpr auto end() const noexcept
+		[[nodiscard]] constexpr auto end() const noexcept
 		{
 			return std::end(m_Values);
 		}
 
-		constexpr auto cend() const noexcept
+		[[nodiscard]] constexpr auto cend() const noexcept
 		{
 			return std::cend(m_Values);
 		}
@@ -213,12 +213,12 @@ namespace georithm
 			return std::rbegin(m_Values);
 		}
 
-		constexpr auto rbegin() const noexcept
+		[[nodiscard]] constexpr auto rbegin() const noexcept
 		{
 			return std::rbegin(m_Values);
 		}
 
-		constexpr auto crbegin() const noexcept
+		[[nodiscard]] constexpr auto crbegin() const noexcept
 		{
 			return std::crbegin(m_Values);
 		}
@@ -228,12 +228,12 @@ namespace georithm
 			return std::rend(m_Values);
 		}
 
-		constexpr auto rend() const noexcept
+		[[nodiscard]] constexpr auto rend() const noexcept
 		{
 			return std::rend(m_Values);
 		}
 
-		constexpr auto crend() const noexcept
+		[[nodiscard]] constexpr auto crend() const noexcept
 		{
 			return std::crend(m_Values);
 		}
@@ -263,8 +263,8 @@ namespace georithm
 
 	template <VectorObject TVector1, VectorObject TVector2>
 	requires ConstForwardIteratable<TVector1> && ConstForwardIteratable<TVector2> &&
-	(TVector1::Dimensions == TVector2::Dimensions) &&
-	Multiplicable<typename TVector1::ValueType, typename TVector2::ValueType>
+		(TVector1::Dimensions == TVector2::Dimensions) &&
+		Multiplicable<typename TVector1::ValueType, typename TVector2::ValueType>
 	constexpr typename TVector1::ValueType scalarProduct(const TVector1& lhs, const TVector2& rhs) noexcept
 	{
 		return std::inner_product(std::cbegin(lhs), std::cend(lhs), std::cbegin(rhs), typename TVector1::ValueType(0));
@@ -276,10 +276,10 @@ namespace georithm
 		return static_cast<typename TVector::ValueType>(std::sqrt(lengthSq(vector)));
 	}
 
-	template <class U, VectorObject TVector>
-	constexpr U length(const TVector& vector) noexcept
+	template <class T2, VectorObject TVector>
+	constexpr T2 length(const TVector& vector) noexcept
 	{
-		return static_cast<U>(std::sqrt(lengthSq(vector)));
+		return static_cast<T2>(std::sqrt(lengthSq(vector)));
 	}
 
 	template <VectorObject TVector>
