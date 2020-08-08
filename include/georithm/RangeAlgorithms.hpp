@@ -9,8 +9,8 @@
 
 #pragma once
 
+#include <concepts>
 #include <iterator>
-#include "Concepts.hpp"
 
 namespace georithm
 {
