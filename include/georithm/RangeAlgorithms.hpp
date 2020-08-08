@@ -10,6 +10,7 @@
 #pragma once
 
 #include <concepts>
+#include <type_traits>
 #include <iterator>
 
 #include "Concepts.hpp"
@@ -25,6 +26,7 @@ namespace georithm
 {
 	template <std::forward_iterator ForwardIt, std::sentinel_for<ForwardIt> ForwardItSentinel, std::input_iterator InputIt, detail::ZipElementsInvocable<ForwardIt, InputIt> BinaryOp>
 	constexpr void zip_elements(ForwardIt first, ForwardItSentinel last, InputIt secFirst, BinaryOp op)
+		noexcept(std::is_nothrow_invocable_v<BinaryOp, typename std::iterator_traits<ForwardIt>::value_type, typename std::iterator_traits<InputIt>::value_type>)
 	{
 		while (first != last)
 		{
