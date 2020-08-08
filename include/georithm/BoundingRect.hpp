@@ -19,7 +19,7 @@
 namespace georithm::detail
 {
 	template <NDimensionalVectorObject<2> TVector>
-	using AABB_t = Rect<TVector, typename component::Translation<TVector>>;
+	using AABB_t = Rect<TVector, component::Translation<TVector>>;
 
 	template <NDimensionalPolygonalObject<2> Poly>
 	constexpr AABB_t<typename GeometricTraits<Poly>::VectorType> makeBoundingRectImpl(const Poly& polygon) noexcept
