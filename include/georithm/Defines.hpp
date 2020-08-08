@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 namespace georithm
 {
 	using DimensionDescriptor_t = std::size_t;
