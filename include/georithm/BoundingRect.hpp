@@ -9,6 +9,9 @@
 
 #pragma once
 
+#include <algorithm>
+#include <limits>
+
 #include "Concepts.hpp"
 #include "Defines.hpp"
 #include "GeometricTraits.hpp"
