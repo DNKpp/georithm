@@ -42,7 +42,7 @@ namespace georithm
 		constexpr Vector& operator =(Vector&&) noexcept = default;
 
 		template <class... TArgs>
-		requires (sizeof...(TArgs) == Dim) && std::convertible_to<std::common_type_t<TArgs...>, T>
+		requires (sizeof...(TArgs) == Dim) && std::is_same_v<std::common_type_t<TArgs...>, T>
 		constexpr Vector(TArgs&&... args) noexcept :
 			m_Values{ std::forward<TArgs>(args)... }
 		{
