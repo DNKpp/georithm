@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include <array>
 #include <algorithm>
+#include <array>
+#include <cassert>
 #include <cmath>
 #include <numeric>
-#include <cassert>
 
 #include "ArithmeticOperators.hpp"
 #include "Concepts.hpp"
@@ -46,6 +46,15 @@ namespace georithm
 		constexpr Vector(TArgs&&... args) noexcept :
 			m_Values{ std::forward<TArgs>(args)... }
 		{
+		}
+
+		template <class T2>
+		requires !std::is_same_v<T2, T> && std::convertible_to<T2, T>
+		explicit constexpr Vector(const Vector<T2, Dim>& other) noexcept
+		{
+			std::transform(std::begin(other), std::end(other), std::begin(m_Values),
+							[](T2 value) -> T { return static_cast<T>(value); }
+			);
 		}
 
 		constexpr static Vector zero() noexcept
