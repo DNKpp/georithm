@@ -23,7 +23,7 @@ namespace georithm
 	template <ValueType T, DimensionDescriptor_t Dim>
 	requires Cardinality<Dim>
 	class Vector :
-		private Arithmetic<Vector<T, Dim>>
+		public Arithmetic<Vector<T, Dim>>
 	{
 	public:
 		using ValueType = T;
