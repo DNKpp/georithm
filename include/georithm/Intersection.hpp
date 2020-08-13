@@ -34,7 +34,7 @@ namespace georithm::detail
 	}
 
 	template <NDimensionalLineObject<2> TLine1, NDimensionalLineObject<2> TLine2>
-	constexpr std::tuple<LineIntersectionResult, typename GeometricTraits<TLine1>::ValueType> intersectionImpl(
+	constexpr std::tuple<LineIntersectionResult, typename GeometricTraits<TLine1>::ValueType, typename GeometricTraits<TLine2>::ValueType> intersectionImpl(
 		const TLine1& lhs, const TLine2& rhs) noexcept
 	{
 		// Credits goes here: http://www-cs.ccny.cuny.edu/~wolberg/capstone/intersection/Intersection%20point%20of%20two%20lines.html
@@ -48,32 +48,33 @@ namespace georithm::detail
 		auto numeratorA = rhsDirection[0] * rhsLocalLhsBegin[1] - rhsDirection[1] * rhsLocalLhsBegin[0];
 		auto numeratorB = lhsDirection[0] * rhsLocalLhsBegin[1] - lhsDirection[1] * rhsLocalLhsBegin[0];
 		if (denominator == 0 && (numeratorA == 0 || numeratorB == 0))
-			return { LineIntersectionResult::collinear, {} };
+			return { LineIntersectionResult::collinear, {}, {} };
 
 		if (denominator == 0)
-			return { LineIntersectionResult::parallel, {} };
+			return { LineIntersectionResult::parallel, {}, {} };
 
-		if (auto result = numeratorA / denominator;
-			isWithinRange(lhs, result) && isWithinRange(rhs, numeratorB / denominator))
+		auto resultLhs = numeratorA / denominator;
+		auto resultRhs = numeratorB / denominator;
+		if (isWithinRange(lhs, resultLhs) && isWithinRange(rhs, resultRhs))
 		{
-			return { LineIntersectionResult::intersecting, result };
+			return { LineIntersectionResult::intersecting, resultLhs, resultRhs };
 		}
-		return { LineIntersectionResult::none, {} };
+		return { LineIntersectionResult::none, {}, {} };
 	}
 
 	template <NDimensionalLineObject<2> TLine, NDimensionalPolygonalObject<2> TPolygon,
-		std::invocable<TLine, typename GeometricTraits<TLine>::ValueType> Callback>
+		std::invocable<typename GeometricTraits<TLine>::ValueType, TLine, typename GeometricTraits<TLine>::ValueType> Callback>
 	constexpr void forEachIntersectionImpl(const TLine& line, const TPolygon& polygon, Callback callback) noexcept
 	{
 		assert(!isNull(line) && !isNull(polygon));
 		for (auto i = 0; i < edgeCount(polygon); ++i)
 		{
 			auto seg = edge(polygon, i);
-			if (auto [intersectionResult, dist] = intersection(seg, line);
+			if (auto [intersectionResult, lhsDist, rhsDist] = intersection(line, seg);
 				intersectionResult == LineIntersectionResult::intersecting)
 			{
 				// ToDo: std::invoke(callback, dist)
-				callback(seg, dist);
+				callback(lhsDist, seg, rhsDist);
 			}
 		}
 	}
@@ -87,10 +88,10 @@ namespace georithm::detail
 		using Value_t = typename GeometricTraits<TLine>::ValueType;
 		std::optional<Value_t> smallestDist;
 		forEachIntersectionImpl(line, polygon,
-								[&smallestDist](const TLine& line, Value_t dist)
+								[&smallestDist](Value_t lineDist, const TLine& edge, Value_t edgeDist)
 								{
-									if (!smallestDist || std::abs(dist) < std::abs(*smallestDist))
-										smallestDist = dist;
+									if (!smallestDist || std::abs(lineDist) < std::abs(*smallestDist))
+										smallestDist = lineDist;
 								}
 		);
 		return smallestDist;
