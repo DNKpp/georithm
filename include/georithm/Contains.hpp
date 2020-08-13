@@ -10,48 +10,74 @@
 
 #include <cassert>
 
-#include "Utility.hpp"
 #include "Concepts.hpp"
 #include "GeometricTraits.hpp"
 #include "Intersection.hpp"
+#include "Rect.hpp"
+#include "Utility.hpp"
 
 namespace georithm::detail
 {
-	template <NDimensionalPolygonalObject<2> TPolygon, NDimensionalVectorObject<2> TVector>
-	constexpr bool containsImpl(const TPolygon& polygon, const TVector& vector) noexcept
+	template <class TRect, NDimensionalVectorObject<2> TVector>
+	requires IsRect_v<TRect>
+	constexpr bool containsImpl(const TRect& rect, const TVector& vector) noexcept
 	{
-		assert(!isNull(polygon));
+		assert(!isNull(rect));
 
-		using Traits_t = GeometricTraits<TPolygon>;
-		using Vector_t = typename Traits_t::VectorType;
-		using Value_t = typename Traits_t::ValueType;
-		Ray<Vector_t> ray{ vector, { Value_t(1), Value_t(0) } };
+		// thanks to this post: https://math.stackexchange.com/a/190373
+		auto vertex0 = vertex(rect, 0);
+		auto AM = vector - vertex0;
+		auto AB = vertex(rect, 1) - vertex0;
+		auto AD = vertex(rect, 3) - vertex0;
 
-		auto count = 0;
-		//for (VertexIndex_t i = 0; i < vertexCount(polygon); ++i)
-		//{
-		//	auto segment = edge(polygon, i);
-		//	auto [result, dist] = intersection(ray, segment);
-		//	using enum LineIntersectionResult;
-		//	switch (result)
-		//	{
-		//	case intersecting:
-		//		++count;
-		//		break;
-		//	case collinear:
-		//	{
-		//		auto sqLength = lengthSq(vector - segment.firstVertex());
-		//		if (0 <= sqLength && sqLength < lengthSq(segment.direction()))
-		//			++count;
-		//	}
-		//	}
-		//}
-		forEachIntersection(polygon, ray,
-							[&count](const auto& line, auto dist) { ++count; }
-		);
+		auto scalar1 = scalarProduct(AM, AB);
+		auto scalar2 = scalarProduct(AB, AB);
+		auto scalar3 = scalarProduct(AM, AD);
+		auto scalar4 = scalarProduct(AD, AD);
 
-		return (count & 1) != 0;
+		return 0 <= scalar1 && scalar1 <= scalar2 && 0 <= scalar3 && scalar3 <= scalar4;
 	}
+
+	//template <NDimensionalPolygonalObject<2> TPolygon, NDimensionalVectorObject<2> TVector>
+	//requires (!IsRect_v<TPolygon>)
+	//constexpr bool containsImpl(const TPolygon& polygon, const TVector& vector) noexcept
+	//{
+	//	assert(!isNull(polygon));
+
+	//	using Traits_t = GeometricTraits<TPolygon>;
+	//	using Vector_t = typename Traits_t::VectorType;
+	//	using Value_t = typename Traits_t::ValueType;
+	//	Ray<Vector_t> ray{ vector, { Value_t(1), Value_t(0) } };
+
+	//	auto count = 0;
+	//	//for (VertexIndex_t i = 0; i < vertexCount(polygon); ++i)
+	//	//{
+	//	//	auto segment = edge(polygon, i);
+	//	//	auto [result, dist] = intersection(ray, segment);
+	//	//	using enum LineIntersectionResult;
+	//	//	switch (result)
+	//	//	{
+	//	//	case intersecting:
+	//	//		++count;
+	//	//		break;
+	//	//	case collinear:
+	//	//	{
+	//	//		auto sqLength = lengthSq(vector - segment.firstVertex());
+	//	//		if (0 <= sqLength && sqLength < lengthSq(segment.direction()))
+	//	//			++count;
+	//	//	}
+	//	//	}
+	//	//}
+	//	forEachIntersection(ray, polygon,
+	//						[&count](auto rayDist, const auto& edge, auto edgeDist)
+	//						{
+	//							if (0 < rayDist)
+	//								++count;
+	//						}
+	//	);
+
+	//	return (count & 1) != 0;
+	//}
 
 	//template <NDimensionalPolygonalObject<2> Poly, NDimensionalLineObject<2> Line>
 	//constexpr bool intersectsImpl(const Poly& polygon, const Line& line) noexcept
@@ -80,8 +106,8 @@ namespace georithm::detail
 
 namespace georithm
 {
-	template <GeometricObject Geo1, class T>
-	constexpr bool contains(const Geo1& lhs, const T& rhs) noexcept
+	template <GeometricObject TGeo1, class T>
+	constexpr bool contains(const TGeo1& lhs, const T& rhs) noexcept
 	{
 		return detail::containsImpl(lhs, rhs);
 	}
