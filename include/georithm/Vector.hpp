@@ -294,6 +294,7 @@ namespace georithm
 	}
 
 	template <VectorObject TVector>
+	requires std::floating_point<typename TVector::ValueType>
 	constexpr TVector normalize(TVector vector) noexcept
 	{
 		assert(vector != TVector::zero());
