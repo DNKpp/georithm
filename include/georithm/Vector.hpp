@@ -50,7 +50,7 @@ namespace georithm
 		}
 
 		template <class T2>
-		requires !std::is_same_v<T2, T> && std::convertible_to<T2, T>
+		requires (!std::is_same_v<T2, T> && std::convertible_to<T2, T>)
 		explicit constexpr Vector(const Vector<T2, Dim>& other) noexcept
 		{
 			std::transform(std::begin(other), std::end(other), std::begin(m_Values),
