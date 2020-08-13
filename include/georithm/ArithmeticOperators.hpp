@@ -9,84 +9,84 @@
 #pragma once
 
 #include <compare>
-#include "Concepts.hpp"
+
+#include "georithm/Concepts.hpp"
 
 namespace georithm
 {
-	template <class T>
 	struct Plus
 	{
-		template <class U>
-		requires AddAssignable<T, U>
-		friend constexpr T operator +(T lhs, const U& rhs)
-		{
-			return lhs += rhs;
-		}
+		constexpr auto operator <=>(const Plus&) const noexcept = default;
 
-		constexpr auto operator <=>(const Plus&) const = default;
+		template <class T1, class T2>
+		requires AddAssignable<T1, T2>
+		friend constexpr T1 operator +(T1 lhs, const T2& rhs) noexcept(noexcept(lhs += rhs))
+		{
+			lhs += rhs;
+			return lhs;
+		}
 	};
 
-	template <class T>
 	struct Minus
 	{
-		template <class U>
-		requires SubtractAssignable<T, U>
-		friend constexpr T operator -(T lhs, const U& rhs)
-		{
-			return lhs -= rhs;
-		}
+		constexpr auto operator <=>(const Minus&) const noexcept = default;
 
-		constexpr auto operator <=>(const Minus&) const = default;
+		template <class T1, class T2>
+		requires SubtractAssignable<T1, T2>
+		friend constexpr T1 operator -(T1 lhs, const T2& rhs) noexcept(noexcept(lhs -= rhs))
+		{
+			lhs -= rhs;
+			return lhs;
+		}
 	};
 
-	template <class T>
 	struct Multiply
 	{
-		template <class U>
-		requires MultiplyAssignable<T, U>
-		friend constexpr T operator *(T lhs, const U& rhs)
-		{
-			return lhs *= rhs;
-		}
+		constexpr auto operator <=>(const Multiply&) const noexcept = default;
 
-		constexpr auto operator <=>(const Multiply&) const = default;
+		template <class T1, class T2>
+		requires MultiplyAssignable<T1, T2>
+		friend constexpr T1 operator *(T1 lhs, const T2& rhs) noexcept(noexcept(lhs *= rhs))
+		{
+			lhs *= rhs;
+			return lhs;
+		}
 	};
 
-	template <class T>
 	struct Divide
 	{
-		template <class U>
-		requires DivideAssignable<T, U>
-		friend constexpr T operator /(T lhs, const U& rhs)
-		{
-			return lhs /= rhs;
-		}
+		constexpr auto operator <=>(const Divide&) const noexcept = default;
 
-		constexpr auto operator <=>(const Divide&) const = default;
+		template <class T1, class T2>
+		requires DivideAssignable<T1, T2>
+		friend constexpr T1 operator /(T1 lhs, const T2& rhs) noexcept(noexcept(lhs /= rhs))
+		{
+			lhs /= rhs;
+			return lhs;
+		}
 	};
 
-	template <class T>
 	struct Modulo
 	{
-		template <class U>
-		requires ModuloAssignable<T, U>
-		friend constexpr T operator %(T lhs, const U& rhs)
-		{
-			return lhs %= rhs;
-		}
+		constexpr auto operator <=>(const Modulo&) const noexcept = default;
 
-		constexpr auto operator <=>(const Modulo&) const = default;
+		template <class T1, class T2>
+		requires ModuloAssignable<T1, T2>
+		friend constexpr T1 operator %(T1 lhs, const T2& rhs) noexcept(noexcept(lhs %= rhs))
+		{
+			lhs %= rhs;
+			return lhs;
+		}
 	};
 
-	template <class T>
 	struct Arithmetic :
-		Plus<T>,
-		Minus<T>,
-		Multiply<T>,
-		Divide<T>,
-		Modulo<T>
+		Plus,
+		Minus,
+		Multiply,
+		Divide,
+		Modulo
 	{
-		constexpr auto operator <=>(const Arithmetic&) const = default;
+		constexpr auto operator <=>(const Arithmetic&) const noexcept = default;
 	};
 }
 
