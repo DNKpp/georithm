@@ -12,6 +12,7 @@
 #include <array>
 #include <cassert>
 #include <cmath>
+#include <concepts>
 #include <numeric>
 
 #include "ArithmeticOperators.hpp"
@@ -54,7 +55,7 @@ namespace georithm
 		{
 			std::transform(std::begin(other), std::end(other), std::begin(m_Values),
 							[](T2 value) -> T { return static_cast<T>(value); }
-			);
+						);
 		}
 
 		constexpr static Vector zero() noexcept
@@ -122,7 +123,7 @@ namespace georithm
 		{
 			zip_elements(std::begin(m_Values), std::end(m_Values), std::begin(other.m_Values),
 						[](auto lhs, const auto& rhs) { return lhs += static_cast<T>(rhs); }
-			);
+						);
 			return *this;
 		}
 
@@ -132,7 +133,7 @@ namespace georithm
 		{
 			zip_elements(std::begin(m_Values), std::end(m_Values), std::begin(other.m_Values),
 						[](auto lhs, const auto& rhs) { return lhs -= static_cast<T>(rhs); }
-			);
+						);
 			return *this;
 		}
 
@@ -142,7 +143,7 @@ namespace georithm
 		{
 			std::for_each(std::begin(m_Values), std::end(m_Values),
 						[&other](auto& lhs) { return lhs += static_cast<T>(other); }
-			);
+						);
 			return *this;
 		}
 
@@ -152,7 +153,7 @@ namespace georithm
 		{
 			std::for_each(std::begin(m_Values), std::end(m_Values),
 						[&other](auto& lhs) { return lhs -= static_cast<T>(other); }
-			);
+						);
 			return *this;
 		}
 
@@ -162,7 +163,7 @@ namespace georithm
 		{
 			std::for_each(std::begin(m_Values), std::end(m_Values),
 						[&other](auto& lhs) { return lhs *= static_cast<T>(other); }
-			);
+						);
 			return *this;
 		}
 
@@ -173,7 +174,7 @@ namespace georithm
 			assert(other != T2(0));
 			std::for_each(std::begin(m_Values), std::end(m_Values),
 						[&other](auto& lhs) { return lhs /= static_cast<T>(other); }
-			);
+						);
 			return *this;
 		}
 
@@ -184,7 +185,7 @@ namespace georithm
 			assert(other != T2(0));
 			std::for_each(std::begin(m_Values), std::end(m_Values),
 						[&other](auto& lhs) { return lhs %= other; }
-			);
+						);
 			return *this;
 		}
 
@@ -268,7 +269,7 @@ namespace georithm
 	{
 		return std::accumulate(std::cbegin(vector), std::cend(vector), typename TVector::ValueType(0),
 								[](auto value, const auto& element) { return value + element * element; }
-		);
+							);
 	}
 
 	template <VectorObject TVector1, VectorObject TVector2>
@@ -299,6 +300,15 @@ namespace georithm
 
 		auto length = georithm::length(vector);
 		return vector /= length;
+	}
+
+	template <VectorObject TVector>
+	requires std::floating_point<typename TVector::ValueType> || std::signed_integral<typename TVector::ValueType>
+	constexpr TVector abs(TVector vector) noexcept
+	{
+		for (auto& el : vector)
+			el = std::abs(el);
+		return vector;
 	}
 }
 
