@@ -70,15 +70,18 @@ TEST_CASE("Rect intersection test", "[Rect]")
 	using Vector2f = Vector<float, 2>;
 	Rect<Vector2f> rect{ {1.f, 1.f} };
 
-	//REQUIRE(intersects(rect.edge(0), rect));
-	//REQUIRE(intersects(rect, rect.edge(0)));
-	//REQUIRE(intersects(rect, rect));
+	REQUIRE(intersects(rect.edge(0), rect));
+	REQUIRE(intersects(rect, rect.edge(0)));
+	REQUIRE(intersects(rect, rect));
 
-	auto result = intersection(rect, rect.edge(1));
+	//auto result = intersection(rect, rect.edge(1));
 
-	forEachIntersection(rect, rect.edge(0), [](const auto& line, auto dist) {});
+	//forEachIntersection(rect, rect.edge(0), [](const auto& line, auto dist) {});
 
+	REQUIRE(contains(rect, rect.span() / 2));
+	REQUIRE(contains(rect, Vector2f{ 0.f, 0.5f }));
 	REQUIRE(contains(rect, rect.span()));
+	REQUIRE_FALSE(contains(rect, rect.span() + Vector2f{ 0.00001f, 0.f }));
 
 	//lengthSq(rect.span());
 	//std::array<int, 10> arr;
@@ -103,6 +106,50 @@ TEST_CASE("Rect intersection test", "[Rect]")
 
 	//line2.direction().x() += 0.1f;
 	//REQUIRE(intersects(line, line2));
+}
+
+TEST_CASE("Rect contains test - float", "[Rect]")
+{
+	using namespace georithm;
+
+	using Vector2f = Vector<float, 2>;
+	Rect<Vector2f> rect{ {1.f, 1.f} };
+
+	REQUIRE(contains(rect, rect.span() / 2));
+	REQUIRE(contains(rect, Vector2f{ 0.f, 0.5f }));
+	REQUIRE(contains(rect, rect.span()));
+	REQUIRE_FALSE(contains(rect, Vector2f{ -0.00001f, 0.f }));
+	REQUIRE_FALSE(contains(rect, Vector2f{ 0.f, -0.00001f }));
+	REQUIRE_FALSE(contains(rect, Vector2f{ -0.00001f, -0.00001f }));
+	REQUIRE_FALSE(contains(rect, Vector2f{ -0.00001f, 0.00001f }));
+	REQUIRE_FALSE(contains(rect, Vector2f{ 0.00001f, -0.00001f }));
+	REQUIRE_FALSE(contains(rect, rect.span() + Vector2f{ 0.00001f, 0.f }));
+	REQUIRE_FALSE(contains(rect, rect.span() + Vector2f{ 0.f, 0.00001f }));
+	REQUIRE_FALSE(contains(rect, rect.span() + Vector2f{ 0.00001f, 0.00001f }));
+	REQUIRE_FALSE(contains(rect, rect.span() + Vector2f{ 0.00001f, -0.00001f }));
+	REQUIRE_FALSE(contains(rect, rect.span() + Vector2f{ -0.00001f, 0.00001f }));
+}
+
+TEST_CASE("Rect contains test - int", "[Rect]")
+{
+	using namespace georithm;
+
+	using Vector2 = Vector<int, 2>;
+	Rect<Vector2> rect{ { 7, 5 } };
+
+	REQUIRE(contains(rect, rect.span() / 2));
+	REQUIRE(contains(rect, Vector2{ 0, 2 }));
+	REQUIRE(contains(rect, rect.span()));
+	REQUIRE_FALSE(contains(rect, Vector2{ -1, 0 }));
+	REQUIRE_FALSE(contains(rect, Vector2{ 0, -1 }));
+	REQUIRE_FALSE(contains(rect, Vector2{ -1, -1 }));
+	REQUIRE_FALSE(contains(rect, Vector2{ -1, 1 }));
+	REQUIRE_FALSE(contains(rect, Vector2{ 1, -1 }));
+	REQUIRE_FALSE(contains(rect, rect.span() + Vector2{ 0, 1 }));
+	REQUIRE_FALSE(contains(rect, rect.span() + Vector2{ 1, 0 }));
+	REQUIRE_FALSE(contains(rect, rect.span() + Vector2{ 1, 1 }));
+	REQUIRE_FALSE(contains(rect, rect.span() + Vector2{ -1, 1 }));
+	REQUIRE_FALSE(contains(rect, rect.span() + Vector2{ 1, -1 }));
 }
 
 TEST_CASE("Rect make bounding rect test", "[Rect]")
