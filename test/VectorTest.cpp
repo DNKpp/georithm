@@ -68,6 +68,14 @@ TEST_CASE("Vector algorithm test", "[Vector]")
 	REQUIRE(length(vec) == 2);	// sqrt converted to int
 	REQUIRE(length<double>(vec) == Approx(std::sqrt((vec.x() * vec.x() + vec.y() * vec.y()))));
 
-	REQUIRE(length(normalize(vec)) == Approx(1));
+	auto vecf = static_cast<Vector<float, 2>>(vec * (-1));
+	REQUIRE(vecf.x() == Approx(-1));
+	REQUIRE(vecf.y() == Approx(-2));
+	REQUIRE(length(normalize(vecf)) == Approx(1));
+
+	vecf = abs(vecf);
+	REQUIRE(vecf.x() == Approx(1));
+	REQUIRE(vecf.y() == Approx(2));
+	REQUIRE(length(normalize(vecf)) == Approx(1));
 }
 
