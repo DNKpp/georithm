@@ -17,7 +17,7 @@
 
 namespace georithm
 {
-	template <class TVectorType, class... TTransformComponent>
+	template <VectorObject TVectorType, class... TTransformComponent>
 	requires (TransformComponent<TTransformComponent, TVectorType> && ...)
 	class Rect :
 		public TTransformComponent...
@@ -103,6 +103,33 @@ namespace georithm
 	private:
 		VectorType m_Span{};
 	};
+}
+
+namespace georithm::detail
+{
+	template <class T>
+	struct IsRect :
+		std::false_type
+	{
+	};
+
+	template <class... Ts>
+	struct IsRect<Rect<Ts...>> :
+		std::true_type
+	{
+	};
+}
+
+namespace georithm
+{
+	template <class T>
+	struct IsRect :
+		detail::IsRect<std::remove_cvref_t<T>>
+	{
+	};
+
+	template <class T>
+	inline constexpr bool IsRect_v = IsRect<T>::value;
 }
 
 #endif
