@@ -42,6 +42,7 @@ TEST_CASE("Vector operator test", "[Vector]")
 	auto real2 = real;
 	real += real2;
 	REQUIRE(real == real2 * 2);
+	REQUIRE(real == 2 * real2);
 	real -= real2;
 	REQUIRE(real == real2);
 

@@ -168,6 +168,16 @@ namespace georithm
 		}
 
 		template <class T2>
+		requires Multiplicable<T2, T>
+		friend Vector operator *(const T2& lhs, Vector rhs) noexcept
+		{
+			std::for_each(std::begin(rhs), std::end(rhs),
+						[&lhs](auto& el) { return el *= static_cast<T>(lhs); }
+						);
+			return rhs;
+		}
+
+		template <class T2>
 		requires Divisable<T, T2>
 		constexpr Vector& operator /=(const T2& other) noexcept
 		{
