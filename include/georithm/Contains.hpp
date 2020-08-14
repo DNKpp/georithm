@@ -10,9 +10,9 @@
 
 #include <cassert>
 
+#include "Bounding.hpp"
 #include "Concepts.hpp"
 #include "GeometricTraits.hpp"
-#include "Intersection.hpp"
 #include "Rect.hpp"
 #include "Utility.hpp"
 
