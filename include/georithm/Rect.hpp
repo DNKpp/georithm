@@ -92,6 +92,11 @@ namespace georithm
 		template <class TTransformer2>
 		[[nodiscard]] constexpr bool operator ==(const Rect<T, TTransformer2>& other) const noexcept
 		{
+			if (isNull() || other.isNull())
+			{
+				return isNull() && other.isNull();
+			}
+			
 			for (VertexIndex_t i = 0; i < vertexCount(); ++i)
 			{
 				if (vertex(i) != other.vertex(i))
