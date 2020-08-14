@@ -9,30 +9,75 @@
 #pragma once
 
 #include <cassert>
-#include <compare>
+#include <type_traits>
 
 #include "Concepts.hpp"
 #include "Defines.hpp"
 #include "Line.hpp"
 
+namespace georithm::detail
+{
+	template <class T>
+	struct ConditionalInherit :
+		public T
+	{
+		template <class... TArgs>
+		constexpr explicit ConditionalInherit(TArgs&&... args) noexcept :
+			T{ std::forward<TArgs>(args)... }
+		{
+		}
+
+		// Todo: c++20
+		/*constexpr */~ConditionalInherit() noexcept = default;
+
+		constexpr ConditionalInherit(const ConditionalInherit&) noexcept = default;
+		constexpr ConditionalInherit& operator =(const ConditionalInherit&) noexcept = default;
+
+		constexpr ConditionalInherit(ConditionalInherit&&) noexcept = default;
+		constexpr ConditionalInherit& operator =(ConditionalInherit&&) noexcept = default;
+		
+		[[nodiscard]] constexpr auto operator <=>(const ConditionalInherit&) const noexcept = default;
+	};
+
+	template <>
+	struct ConditionalInherit<void>
+	{
+		constexpr ConditionalInherit() noexcept = default;
+		
+		// Todo: c++20
+		/*constexpr */~ConditionalInherit() noexcept = default;
+
+		constexpr ConditionalInherit(const ConditionalInherit&) noexcept = default;
+		constexpr ConditionalInherit& operator =(const ConditionalInherit&) noexcept = default;
+
+		constexpr ConditionalInherit(ConditionalInherit&&) noexcept = default;
+		constexpr ConditionalInherit& operator =(ConditionalInherit&&) noexcept = default;
+		
+		[[nodiscard]] constexpr auto operator <=>(const ConditionalInherit&) const noexcept = default;
+	};
+}
+
 namespace georithm
 {
-	template <VectorObject TVectorType, class... TTransformComponent>
-	requires (TransformComponent<TTransformComponent, TVectorType> && ...)
+	template <ValueType T, class TTransformer>
 	class Rect :
-		public TTransformComponent...
+		public detail::ConditionalInherit<TTransformer>
 	{
 	public:
-		using VectorType = TVectorType;
+		using VectorType = Vector<T, 2>;
 
 		constexpr Rect() noexcept = default;
 		/*ToDo: c++20
 		constexpr */
 		~Rect() noexcept = default;
 
-		template <class... TArgs>
-		constexpr Rect(const VectorType& span, TArgs&&... args) noexcept :
-			TTransformComponent{ std::forward<TArgs>(args) }...,
+		constexpr explicit Rect(const VectorType& span) noexcept :
+			m_Span{ span }
+		{
+		}
+
+		constexpr Rect(const VectorType& position, const VectorType& span) noexcept :
+			m_Position{ position},
 			m_Span{ span }
 		{
 		}
@@ -42,10 +87,10 @@ namespace georithm
 		constexpr Rect(Rect&&) noexcept = default;
 		constexpr Rect& operator =(Rect&&) noexcept = default;
 
-		constexpr bool operator ==(const Rect& other) const noexcept = default;
+		//[[nodiscard]] constexpr bool operator ==(const Rect& other) const noexcept = default;
 
-		template <class... T2TransformComponents>
-		constexpr bool operator ==(const Rect<TVectorType, T2TransformComponents...>& other) const noexcept
+		template <class TTransformer2>
+		[[nodiscard]] constexpr bool operator ==(const Rect<T, TTransformer2>& other) const noexcept
 		{
 			for (VertexIndex_t i = 0; i < vertexCount(); ++i)
 			{
@@ -72,8 +117,7 @@ namespace georithm
 			auto vertex = VectorType::zero();
 			vertex.x() = index == 1 || index == 2 ? m_Span.x() : vertex.x();
 			vertex.y() = index == 2 || index == 3 ? m_Span.y() : vertex.y();
-			((vertex = static_cast<const TTransformComponent&>(*this).transform(vertex)), ...);
-			return vertex;
+			return vertex + m_Position;
 		}
 
 		[[nodiscard]] constexpr Segment<VectorType> edge(EdgeIndex_t index) const noexcept
@@ -83,6 +127,16 @@ namespace georithm
 			auto first = vertex(index);
 			auto second = vertex((index + 1) % vertexCount());
 			return { first, second - first };
+		}
+
+		[[nodiscard]] constexpr const VectorType& position() const noexcept
+		{
+			return m_Position;
+		}
+
+		[[nodiscard]] constexpr VectorType& position() noexcept
+		{
+			return m_Position;
 		}
 
 		[[nodiscard]] constexpr const VectorType& span() const noexcept
@@ -101,35 +155,12 @@ namespace georithm
 		}
 
 	private:
-		VectorType m_Span{};
-	};
-}
-
-namespace georithm::detail
-{
-	template <class T>
-	struct IsRect :
-		std::false_type
-	{
+		VectorType m_Position;
+		VectorType m_Span;
 	};
 
-	template <class... Ts>
-	struct IsRect<Rect<Ts...>> :
-		std::true_type
-	{
-	};
-}
-
-namespace georithm
-{
-	template <class T>
-	struct IsRect :
-		detail::IsRect<std::remove_cvref_t<T>>
-	{
-	};
-
-	template <class T>
-	inline constexpr bool IsRect_v = IsRect<T>::value;
+	template <ValueType T>
+	using AABB_t = Rect<T, void>;
 }
 
 #endif

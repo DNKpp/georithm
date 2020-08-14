@@ -11,7 +11,7 @@
 #include "../include/georithm/Intersection.hpp"
 #include "../include/georithm/Intersects.hpp"
 #include "../include/georithm/Rect.hpp"
-#include "../include/georithm/BoundingRect.hpp"
+#include "../include/georithm/Bounding.hpp"
 #include "../include/georithm/Contains.hpp"
 #include "../include/georithm/Utility.hpp"
 
@@ -25,7 +25,7 @@ TEST_CASE("Rect compile and basic test", "[Rect]")
 	using namespace georithm;
 
 	using Vector2f = Vector<float, 2>;
-	Rect<Vector2f> rect;
+	AABB_t<float> rect;
 	REQUIRE(rect.isNull());
 
 	rect.span() = { 1.f, 1.f };
@@ -68,7 +68,7 @@ TEST_CASE("Rect intersection test", "[Rect]")
 	using namespace georithm;
 
 	using Vector2f = Vector<float, 2>;
-	Rect<Vector2f> rect{ {1.f, 1.f} };
+	AABB_t<float> rect{ {1.f, 1.f} };
 
 	REQUIRE(intersects(rect.edge(0), rect));
 	REQUIRE(intersects(rect, rect.edge(0)));
@@ -113,7 +113,7 @@ TEST_CASE("Rect contains test - float", "[Rect]")
 	using namespace georithm;
 
 	using Vector2f = Vector<float, 2>;
-	Rect<Vector2f> rect{ {1.f, 1.f} };
+	AABB_t<float> rect{ {1.f, 1.f} };
 
 	REQUIRE(contains(rect, rect.span() / 2));
 	REQUIRE(contains(rect, Vector2f{ 0.f, 0.5f }));
@@ -135,7 +135,7 @@ TEST_CASE("Rect contains test - int", "[Rect]")
 	using namespace georithm;
 
 	using Vector2 = Vector<int, 2>;
-	Rect<Vector2> rect{ { 7, 5 } };
+	AABB_t<int> rect{ { 7, 5 } };
 
 	REQUIRE(contains(rect, rect.span() / 2));
 	REQUIRE(contains(rect, Vector2{ 0, 2 }));
@@ -157,13 +157,15 @@ TEST_CASE("Rect make bounding rect test", "[Rect]")
 	using namespace georithm;
 
 	using Vector2 = Vector<int, 2>;
-	Rect<Vector2> rect{ {1, 1} };
+	AABB_t<int> rect{ {1, 1} };
 
 	auto bb = makeBoundingRect(rect);
 
 	REQUIRE(!(rect != bb));
 
-	Rect<Vector2, component::Translation<Vector2>> transRect{ { 10, 10 }, Vector2{ -5, -5 } };
+	AABB_t<int> transRect{ { 10, 10 }, { -5, -5 } };
 	bb = makeBoundingRect(transRect);
-	REQUIRE(!(transRect != bb));
+	REQUIRE(transRect != bb);
+	REQUIRE(bb.position() == transRect.position() + transRect.span());
+	REQUIRE(bb.position() == abs(transRect.span()));
 }

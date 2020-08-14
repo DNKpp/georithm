@@ -18,24 +18,32 @@
 
 namespace georithm::detail
 {
-	template <class TRect, NDimensionalVectorObject<2> TVector>
-	requires IsRect_v<TRect>
-	constexpr bool containsImpl(const TRect& rect, const TVector& vector) noexcept
+	//template <class TRect, NDimensionalVectorObject<2> TVector>
+	//requires IsRect_v<TRect>
+	//constexpr bool containsImpl(const TRect& rect, const TVector& vector) noexcept
+	//{
+	//	assert(!isNull(rect));
+
+	//	// thanks to this post: https://math.stackexchange.com/a/190373
+	//	auto vertex0 = vertex(rect, 0);
+	//	auto AM = vector - vertex0;
+	//	auto AB = vertex(rect, 1) - vertex0;
+	//	auto AD = vertex(rect, 3) - vertex0;
+
+	//	auto scalar1 = scalarProduct(AM, AB);
+	//	auto scalar2 = scalarProduct(AB, AB);
+	//	auto scalar3 = scalarProduct(AM, AD);
+	//	auto scalar4 = scalarProduct(AD, AD);
+
+	//	return 0 <= scalar1 && scalar1 <= scalar2 && 0 <= scalar3 && scalar3 <= scalar4;
+	//}
+
+	template <class T, NDimensionalVectorObject<2> TVector>
+	requires std::convertible_to<T, typename TVector::ValueType>
+	constexpr bool containsImpl(const AABB_t<T>& rect, const TVector& point) noexcept
 	{
 		assert(!isNull(rect));
-
-		// thanks to this post: https://math.stackexchange.com/a/190373
-		auto vertex0 = vertex(rect, 0);
-		auto AM = vector - vertex0;
-		auto AB = vertex(rect, 1) - vertex0;
-		auto AD = vertex(rect, 3) - vertex0;
-
-		auto scalar1 = scalarProduct(AM, AB);
-		auto scalar2 = scalarProduct(AB, AB);
-		auto scalar3 = scalarProduct(AM, AD);
-		auto scalar4 = scalarProduct(AD, AD);
-
-		return 0 <= scalar1 && scalar1 <= scalar2 && 0 <= scalar3 && scalar3 <= scalar4;
+		return left(rect) <= point.x() && point.x() <= right(rect) && top(rect) <= point.y() && point.y() <= bottom(rect);
 	}
 
 	//template <NDimensionalPolygonalObject<2> TPolygon, NDimensionalVectorObject<2> TVector>
