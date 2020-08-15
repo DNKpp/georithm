@@ -49,7 +49,9 @@ namespace georithm::transform
 
 		[[nodiscard]] constexpr VectorType transform(VectorType vec) const noexcept
 		{
-			zip_elements(std::begin(vec), std::end(vec), std::begin(m_Scale),
+			zip_elements(std::begin(vec),
+						std::end(vec),
+						std::begin(m_Scale),
 						[](auto lhs, const auto& rhs) { return lhs * rhs; }
 						);
 			return vec;
