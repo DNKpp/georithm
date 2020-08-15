@@ -53,7 +53,9 @@ namespace georithm
 		requires (!std::is_same_v<T2, T> && std::convertible_to<T2, T>)
 		explicit constexpr Vector(const Vector<T2, Dim>& other) noexcept
 		{
-			std::transform(std::begin(other), std::end(other), std::begin(m_Values),
+			std::transform(std::begin(other),
+							std::end(other),
+							std::begin(m_Values),
 							[](T2 value) -> T { return static_cast<T>(value); }
 						);
 		}
@@ -121,7 +123,9 @@ namespace georithm
 		requires Addable<T, T2>
 		constexpr Vector& operator +=(const Vector<T2, Dim>& other) noexcept
 		{
-			zip_elements(std::begin(m_Values), std::end(m_Values), std::begin(other.m_Values),
+			zip_elements(std::begin(m_Values),
+						std::end(m_Values),
+						std::begin(other.m_Values),
 						[](auto lhs, const auto& rhs) { return lhs += static_cast<T>(rhs); }
 						);
 			return *this;
@@ -131,7 +135,9 @@ namespace georithm
 		requires Subtractable<T, T2>
 		constexpr Vector& operator -=(const Vector<T2, Dim>& other) noexcept
 		{
-			zip_elements(std::begin(m_Values), std::end(m_Values), std::begin(other.m_Values),
+			zip_elements(std::begin(m_Values),
+						std::end(m_Values),
+						std::begin(other.m_Values),
 						[](auto lhs, const auto& rhs) { return lhs -= static_cast<T>(rhs); }
 						);
 			return *this;
@@ -141,7 +147,8 @@ namespace georithm
 		requires Addable<T, T2>
 		constexpr Vector& operator +=(const T2& other) noexcept
 		{
-			std::for_each(std::begin(m_Values), std::end(m_Values),
+			std::for_each(std::begin(m_Values),
+						std::end(m_Values),
 						[&other](auto& lhs) { return lhs += static_cast<T>(other); }
 						);
 			return *this;
@@ -151,7 +158,8 @@ namespace georithm
 		requires Subtractable<T, T2>
 		constexpr Vector& operator -=(const T2& other) noexcept
 		{
-			std::for_each(std::begin(m_Values), std::end(m_Values),
+			std::for_each(std::begin(m_Values),
+						std::end(m_Values),
 						[&other](auto& lhs) { return lhs -= static_cast<T>(other); }
 						);
 			return *this;
@@ -161,7 +169,8 @@ namespace georithm
 		requires Multiplicable<T, T2>
 		constexpr Vector& operator *=(const T2& other) noexcept
 		{
-			std::for_each(std::begin(m_Values), std::end(m_Values),
+			std::for_each(std::begin(m_Values),
+						std::end(m_Values),
 						[&other](auto& lhs) { return lhs *= static_cast<T>(other); }
 						);
 			return *this;
@@ -171,7 +180,8 @@ namespace georithm
 		requires Multiplicable<T2, T>
 		friend Vector operator *(const T2& lhs, Vector rhs) noexcept
 		{
-			std::for_each(std::begin(rhs), std::end(rhs),
+			std::for_each(std::begin(rhs),
+						std::end(rhs),
 						[&lhs](auto& el) { return el *= static_cast<T>(lhs); }
 						);
 			return rhs;
@@ -182,7 +192,8 @@ namespace georithm
 		constexpr Vector& operator /=(const T2& other) noexcept
 		{
 			assert(other != T2(0));
-			std::for_each(std::begin(m_Values), std::end(m_Values),
+			std::for_each(std::begin(m_Values),
+						std::end(m_Values),
 						[&other](auto& lhs) { return lhs /= static_cast<T>(other); }
 						);
 			return *this;
@@ -193,7 +204,8 @@ namespace georithm
 		constexpr Vector& operator %=(const T2& other) noexcept
 		{
 			assert(other != T2(0));
-			std::for_each(std::begin(m_Values), std::end(m_Values),
+			std::for_each(std::begin(m_Values),
+						std::end(m_Values),
 						[&other](auto& lhs) { return lhs %= other; }
 						);
 			return *this;
@@ -277,7 +289,9 @@ namespace georithm
 	requires ConstForwardIteratable<TVector>
 	constexpr typename TVector::ValueType lengthSq(const TVector& vector) noexcept
 	{
-		return std::accumulate(std::cbegin(vector), std::cend(vector), typename TVector::ValueType(0),
+		return std::accumulate(std::cbegin(vector),
+								std::cend(vector),
+								typename TVector::ValueType(0),
 								[](auto value, const auto& element) { return value + element * element; }
 							);
 	}
@@ -319,6 +333,28 @@ namespace georithm
 	{
 		for (auto& el : vector)
 			el = std::abs(el);
+		return vector;
+	}
+
+	template <NDimensionalVectorObject<2> TVector>
+	requires std::floating_point<typename TVector::ValueType>
+	constexpr TVector rotate(const TVector& vector, typename TVector::ValueType radian) noexcept
+	{
+		auto sin = std::sin(radian);
+		auto cos = std::cos(radian);
+		return { cos * vector[0] - sin * vector[1], sin * vector[0] + cos * vector[1] };
+	}
+
+	template <NDimensionalVectorObject<2> TVector>
+	requires std::signed_integral<typename TVector::ValueType>
+	constexpr TVector rotate(TVector vector, double radian) noexcept
+	{
+		auto rotated = rotate(static_cast<Vector<double, 2>>(vector), radian);
+		zip_elements(std::begin(vector),
+					std::end(vector),
+					std::begin(rotated),
+					[](const auto& lhs, const auto& rhs) { return static_cast<typename TVector::ValueType>(std::llround(rhs)); }
+					);
 		return vector;
 	}
 }
