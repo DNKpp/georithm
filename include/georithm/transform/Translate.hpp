@@ -17,15 +17,15 @@ namespace georithm::transform
 	{
 	public:
 		using VectorType = TVectorType;
+		using ValueType = typename TVectorType::ValueType;
 
 		constexpr Translate() noexcept = default;
 		/*ToDo: c++20
 		constexpr */
 		~Translate() noexcept = default;
 
-		template <std::convertible_to<VectorType> T>
-		explicit constexpr Translate(T&& translation) noexcept :
-			m_Translation{ std::forward<T>(translation) }
+		constexpr explicit Translate(const VectorType& translation) noexcept :
+			m_Translation{ translation }
 		{
 		}
 
@@ -46,7 +46,6 @@ namespace georithm::transform
 			return m_Translation;
 		}
 
-	protected:
 		[[nodiscard]] constexpr VectorType transform(VectorType vec) const noexcept
 		{
 			return vec += m_Translation;

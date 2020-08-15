@@ -18,15 +18,15 @@ namespace georithm::transform
 	{
 	public:
 		using VectorType = TVectorType;
+		using ValueType = typename TVectorType::ValueType;
 
 		constexpr Scale() noexcept = default;
 		/*ToDo: c++20
 		constexpr */
 		~Scale() noexcept = default;
 
-		template <std::convertible_to<VectorType> T>
-		explicit constexpr Scale(T&& translation) noexcept :
-			m_Scale{ std::forward<T>(translation) }
+		constexpr explicit Scale(const VectorType& scale) noexcept :
+			m_Scale{ scale }
 		{
 		}
 
@@ -47,7 +47,6 @@ namespace georithm::transform
 			return m_Scale;
 		}
 
-	protected:
 		[[nodiscard]] constexpr VectorType transform(VectorType vec) const noexcept
 		{
 			zip_elements(std::begin(vec), std::end(vec), std::begin(m_Scale),
@@ -57,7 +56,7 @@ namespace georithm::transform
 		}
 
 	private:
-		VectorType m_Scale{ VectorType::ValueType(1), VectorType::ValueType(1) };
+		VectorType m_Scale{ ValueType(1), ValueType(1) };
 	};
 }
 
