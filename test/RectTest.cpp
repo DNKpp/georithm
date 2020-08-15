@@ -15,6 +15,7 @@
 #include "georithm/Utility.hpp"
 
 #include "georithm/transform/Scale.hpp"
+#include "georithm/transform/Translate.hpp"
 
 //TEST_CASE("Line constexpr compile test", "[Line]")
 //{
@@ -176,6 +177,50 @@ TEST_CASE("Rect transform tests", "[Rect]")
 	using namespace georithm;
 
 	using Vector2F_t = Vector<float, 2>;
+
+	SECTION("translate")
+	{
+		Rect<float, transform::Translate<Vector2F_t>> rect{ {1.f, 1.f} };
+
+		SECTION("zero")
+		{
+			auto bb = makeBoundingRect(rect);
+			REQUIRE(bb.position() == Vector2F_t::zero());
+			REQUIRE(bb.span() == Vector2F_t{ 1.f, 1.f });
+		}
+
+		SECTION("not zero")
+		{
+			Vector2F_t position;
+			Vector2F_t translation{ -3.f, 5.f };
+			
+			SECTION("position 0/0 move bottom right")
+			{
+			}
+
+			SECTION("position 5/3 move bottom right")
+			{
+				position = { 5.f, 3.f };
+			}
+
+			SECTION("position 0/0 move top left")
+			{
+				translation *= -1.f;
+			}
+
+			SECTION("position 5/3 move top left")
+			{
+				translation *= -1.f;
+				position = { 5.f, 3.f };
+			}
+
+			rect.translation() = position;
+			rect.position() = position;
+			auto bb = makeBoundingRect(rect);
+			REQUIRE(bb.position() == position + position);
+			REQUIRE(bb.span() == Vector2F_t{ 1.f, 1.f });
+		}
+	}
 
 	SECTION("scale")
 	{
