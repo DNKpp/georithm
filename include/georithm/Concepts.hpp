@@ -134,8 +134,9 @@ namespace georithm
 	concept invocable_r = std::is_invocable_r_v<R, Fn, TArgs...>;
 
 	template <class T, class ExpectedVectorType>
-	concept TransformComponent = requires(const std::remove_cvref_t<T>& component)
+	concept TransformComponent = std::default_initializable<T> && requires(const std::remove_cvref_t<T>& component)
 	{
+		typename T::ValueType;
 		typename T::VectorType;
 		{ component.transform(std::declval<ExpectedVectorType>()) }->std::convertible_to<ExpectedVectorType>;
 	};
