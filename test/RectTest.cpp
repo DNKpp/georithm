@@ -16,6 +16,8 @@
 
 #include "georithm/transform/Scale.hpp"
 #include "georithm/transform/Translate.hpp"
+#include "georithm/transform/Rotate.hpp"
+#include "georithm/transform/Shear.hpp"
 
 //TEST_CASE("Line constexpr compile test", "[Line]")
 //{
@@ -256,6 +258,92 @@ TEST_CASE("Rect transform tests", "[Rect]")
 			REQUIRE(bb.position() == Vector2F_t::zero());
 			REQUIRE(bb.span() == Vector2F_t{ 3.f, 2.f });
 		}
+	}
+
+	SECTION("rotate")
+	{
+		Rect<float, transform::Rotate<Vector2F_t>> rect{ {1.f, 1.f} };
+		Rect<int, transform::Rotate<Vector<int, 2>>> iRect{ {1, 1 } };
+
+		auto rotation = iRect.rotation();
+
+		SECTION("1:1")
+		{
+			auto bb = makeBoundingRect(rect);
+			REQUIRE(bb.position() == Vector2F_t::zero());
+			REQUIRE(bb.span() == Vector2F_t{ 1.f, 1.f });
+		}
+
+		//SECTION("mirror")
+		//{
+		//	rect.scale() = { -1.f, -1.f };
+		//	auto bb = makeBoundingRect(rect);
+		//	REQUIRE(bb.position() == Vector2F_t{ -1.f, -1.f });
+		//	REQUIRE(bb.span() == Vector2F_t{ 1.f, 1.f });
+		//}
+
+		//SECTION("downscale")
+		//{
+		//	rect.scale() = { 0.5f, 0.3f };
+		//	auto bb = makeBoundingRect(rect);
+		//	REQUIRE(bb.position() == Vector2F_t::zero());
+		//	REQUIRE(bb.span() == Vector2F_t{ 0.5f, 0.3f });
+		//}
+
+		//SECTION("upscale")
+		//{
+		//	rect.scale() = { 3.f, 2.f };
+		//	auto bb = makeBoundingRect(rect);
+		//	REQUIRE(bb.position() == Vector2F_t::zero());
+		//	REQUIRE(bb.span() == Vector2F_t{ 3.f, 2.f });
+		//}
+	}
+
+	SECTION("shear")
+	{
+		Rect<float, transform::Shear<Vector2F_t>> rect{ {1.f, 1.f} };
+		//Rect<int, transform::Rotate<Vector<int, 2>>> iRect{ {1, 1 } };
+
+		SECTION("zero")
+		{
+			auto bb = makeBoundingRect(rect);
+			REQUIRE(bb.position() == Vector2F_t::zero());
+			REQUIRE(bb.span() == Vector2F_t{ 1.f, 1.f });
+		}
+
+		SECTION("x20")
+		{
+			rect.shear() = { 20.f, 0.f };
+			
+			auto bb = makeBoundingRect(rect);
+			REQUIRE(bb.position() == Vector2F_t::zero());
+			REQUIRE(bb.span() == Vector2F_t{ 21.f, 1.f });
+			REQUIRE(vertex(rect, 3) == Vector2F_t{ 20.f, 1.f });
+		}
+
+		//SECTION("mirror")
+		//{
+		//	rect.scale() = { -1.f, -1.f };
+		//	auto bb = makeBoundingRect(rect);
+		//	REQUIRE(bb.position() == Vector2F_t{ -1.f, -1.f });
+		//	REQUIRE(bb.span() == Vector2F_t{ 1.f, 1.f });
+		//}
+
+		//SECTION("downscale")
+		//{
+		//	rect.scale() = { 0.5f, 0.3f };
+		//	auto bb = makeBoundingRect(rect);
+		//	REQUIRE(bb.position() == Vector2F_t::zero());
+		//	REQUIRE(bb.span() == Vector2F_t{ 0.5f, 0.3f });
+		//}
+
+		//SECTION("upscale")
+		//{
+		//	rect.scale() = { 3.f, 2.f };
+		//	auto bb = makeBoundingRect(rect);
+		//	REQUIRE(bb.position() == Vector2F_t::zero());
+		//	REQUIRE(bb.span() == Vector2F_t{ 3.f, 2.f });
+		//}
 	}
 
 	//AABB_t<int> transRect{ { 10, 10 }, { -5, -5 } };
