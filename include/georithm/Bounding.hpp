@@ -48,8 +48,56 @@ namespace georithm::detail
 		return std::max(rect.position().y(), rect.position().y() + rect.span().y());
 	}
 
-	template <NDimensionalPolygonalObject<2> Poly>
-	[[nodiscard]] constexpr AABB_t<typename GeometricTraits<Poly>::ValueType> makeBoundingRect(const Poly& polygon) noexcept
+	template <NDimensionalPolygonalObject<2> TPolygon>
+	[[nodiscard]] constexpr typename GeometricTraits<TPolygon>::ValueType left(const TPolygon& polygon) noexcept
+	{
+		auto count = vertexCount(polygon);
+		assert(!isNull(polygon) && 2 < count);
+		auto min = vertex(polygon, 0).x();
+
+		for (VertexIndex_t i = 1; i < count; ++i)
+			min = std::min(min, vertex(polygon, i).x());
+		return min;
+	}
+
+	template <NDimensionalPolygonalObject<2> TPolygon>
+	[[nodiscard]] constexpr typename GeometricTraits<TPolygon>::ValueType top(const TPolygon& polygon) noexcept
+	{
+		auto count = vertexCount(polygon);
+		assert(!isNull(polygon) && 2 < count);
+		auto min = vertex(polygon, 0).y();
+
+		for (VertexIndex_t i = 1; i < count; ++i)
+			min = std::min(min, vertex(polygon, i).y());
+		return min;
+	}
+
+	template <NDimensionalPolygonalObject<2> TPolygon>
+	[[nodiscard]] constexpr typename GeometricTraits<TPolygon>::ValueType right(const TPolygon& polygon) noexcept
+	{
+		auto count = vertexCount(polygon);
+		assert(!isNull(polygon) && 2 < count);
+		auto max = vertex(polygon, 0).x();
+
+		for (VertexIndex_t i = 1; i < count; ++i)
+			max = std::max(max, vertex(polygon, i).x());
+		return max;
+	}
+
+	template <NDimensionalPolygonalObject<2> TPolygon>
+	[[nodiscard]] constexpr typename GeometricTraits<TPolygon>::ValueType bottom(const TPolygon& polygon) noexcept
+	{
+		auto count = vertexCount(polygon);
+		assert(!isNull(polygon) && 2 < count);
+		auto max = vertex(polygon, 0).y();
+
+		for (VertexIndex_t i = 1; i < count; ++i)
+			max = std::max(max, vertex(polygon, i).y());
+		return max;
+	}
+
+	template <NDimensionalPolygonalObject<2> TPolygon>
+	[[nodiscard]] constexpr AABB_t<typename GeometricTraits<TPolygon>::ValueType> makeBoundingRect(const TPolygon& polygon) noexcept
 	{
 		assert(!isNull(polygon) && 2 <= vertexCount(polygon));
 
@@ -61,31 +109,31 @@ namespace georithm::detail
 namespace georithm
 {
 	template <NDimensionalObject<2> TObj>
-	[[nodiscard]] constexpr typename  GeometricTraits<TObj>::ValueType left(const TObj& rect) noexcept
+	[[nodiscard]] constexpr typename GeometricTraits<TObj>::ValueType left(const TObj& rect) noexcept
 	{
 		return detail::left(rect);
 	}
 
 	template <NDimensionalObject<2> TObj>
-	[[nodiscard]] constexpr typename  GeometricTraits<TObj>::ValueType right(const TObj& rect) noexcept
+	[[nodiscard]] constexpr typename GeometricTraits<TObj>::ValueType right(const TObj& rect) noexcept
 	{
 		return detail::right(rect);
 	}
 
 	template <NDimensionalObject<2> TObj>
-	[[nodiscard]] constexpr typename  GeometricTraits<TObj>::ValueType top(const TObj& rect) noexcept
+	[[nodiscard]] constexpr typename GeometricTraits<TObj>::ValueType top(const TObj& rect) noexcept
 	{
 		return detail::top(rect);
 	}
-	
+
 	template <NDimensionalObject<2> TObj>
-	[[nodiscard]] constexpr typename  GeometricTraits<TObj>::ValueType bottom(const TObj& rect) noexcept
+	[[nodiscard]] constexpr typename GeometricTraits<TObj>::ValueType bottom(const TObj& rect) noexcept
 	{
 		return detail::bottom(rect);
 	}
-	
+
 	template <NDimensionalObject<2> TObj>
-	[[nodiscard]] constexpr AABB_t<typename  GeometricTraits<TObj>::ValueType> makeBoundingRect(const TObj& object) noexcept
+	[[nodiscard]] constexpr AABB_t<typename GeometricTraits<TObj>::ValueType> makeBoundingRect(const TObj& object) noexcept
 	{
 		return detail::makeBoundingRect(object);
 	}
