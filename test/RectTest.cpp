@@ -5,14 +5,16 @@
 //          https://www.boost.org/LICENSE_1_0.txt)
 
 #include "catch.hpp"
-#include "../include/georithm/Line.hpp"
-#include "../include/georithm/Vector.hpp"
-#include "../include/georithm/Intersection.hpp"
-#include "../include/georithm/Intersects.hpp"
-#include "../include/georithm/Rect.hpp"
-#include "../include/georithm/Bounding.hpp"
-#include "../include/georithm/Contains.hpp"
-#include "../include/georithm/Utility.hpp"
+#include "georithm/Line.hpp"
+#include "georithm/Vector.hpp"
+#include "georithm/Intersection.hpp"
+#include "georithm/Intersects.hpp"
+#include "georithm/Rect.hpp"
+#include "georithm/Bounding.hpp"
+#include "georithm/Contains.hpp"
+#include "georithm/Utility.hpp"
+
+#include "georithm/transform/Scale.hpp"
 
 //TEST_CASE("Line constexpr compile test", "[Line]")
 //{
@@ -167,4 +169,53 @@ TEST_CASE("Rect make bounding rect test", "[Rect]")
 	REQUIRE(transRect != bb);
 	REQUIRE(bb.position() == transRect.position() + transRect.span());
 	REQUIRE(bb.position() == abs(transRect.span()));
+}
+
+TEST_CASE("Rect transform tests", "[Rect]")
+{
+	using namespace georithm;
+
+	using Vector2F_t = Vector<float, 2>;
+
+	SECTION("scale")
+	{
+		Rect<float, transform::Scale<Vector2F_t>> rect{ {1.f, 1.f} };
+
+		SECTION("1:1")
+		{
+			auto bb = makeBoundingRect(rect);
+			REQUIRE(bb.position() == Vector2F_t::zero());
+			REQUIRE(bb.span() == Vector2F_t{ 1.f, 1.f });
+		}
+
+		SECTION("mirror")
+		{
+			rect.scale() = { -1.f, -1.f };
+			auto bb = makeBoundingRect(rect);
+			REQUIRE(bb.position() == Vector2F_t{ -1.f, -1.f });
+			REQUIRE(bb.span() == Vector2F_t{ 1.f, 1.f });
+		}
+
+		SECTION("downscale")
+		{
+			rect.scale() = { 0.5f, 0.3f };
+			auto bb = makeBoundingRect(rect);
+			REQUIRE(bb.position() == Vector2F_t::zero());
+			REQUIRE(bb.span() == Vector2F_t{ 0.5f, 0.3f });
+		}
+
+		SECTION("upscale")
+		{
+			rect.scale() = { 3.f, 2.f };
+			auto bb = makeBoundingRect(rect);
+			REQUIRE(bb.position() == Vector2F_t::zero());
+			REQUIRE(bb.span() == Vector2F_t{ 3.f, 2.f });
+		}
+	}
+
+	//AABB_t<int> transRect{ { 10, 10 }, { -5, -5 } };
+	//bb = makeBoundingRect(transRect);
+	//REQUIRE(transRect != bb);
+	//REQUIRE(bb.position() == transRect.position() + transRect.span());
+	//REQUIRE(bb.position() == abs(transRect.span()));
 }
