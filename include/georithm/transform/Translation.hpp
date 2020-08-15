@@ -3,16 +3,16 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          https://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef GEORITHM_COMPONENT_TRANSLATION_HPP
-#define GEORITHM_COMPONENT_TRANSLATION_HPP
+#ifndef GEORITHM_TRANSFORM_TRANSLATION_HPP
+#define GEORITHM_TRANSFORM_TRANSLATION_HPP
 
 #pragma once
 
-#include <compare>
+#include "georithm/Concepts.hpp"
 
-namespace georithm::component
+namespace georithm::transform
 {
-	template <class TVectorType>
+	template <VectorObject TVectorType>
 	class Translation
 	{
 	public:
@@ -25,7 +25,7 @@ namespace georithm::component
 
 		template <std::convertible_to<TVectorType> T>
 		explicit constexpr Translation(T&& translation) noexcept :
-			m_Translation(std::forward<T>(translation))
+			m_Translation{ std::forward<T>(translation) }
 		{
 		}
 
@@ -34,7 +34,7 @@ namespace georithm::component
 		constexpr Translation(Translation&&) = default;
 		constexpr Translation& operator =(Translation&&) = default;
 
-		constexpr bool operator ==(const Translation&) const = default;
+		[[nodiscard]] constexpr bool operator ==(const Translation&) const = default;
 
 		[[nodiscard]] constexpr const VectorType& translation() const noexcept
 		{
@@ -46,14 +46,14 @@ namespace georithm::component
 			return m_Translation;
 		}
 
-	public:
+	protected:
 		[[nodiscard]] constexpr VectorType transform(VectorType vec) const noexcept
 		{
 			return vec += m_Translation;
 		}
 
 	private:
-		TVectorType m_Translation{};
+		TVectorType m_Translation;
 	};
 }
 
