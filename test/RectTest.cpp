@@ -7,7 +7,6 @@
 #include "catch.hpp"
 #include "../include/georithm/Line.hpp"
 #include "../include/georithm/Vector.hpp"
-#include "../include/georithm/component/Translation.hpp"
 #include "../include/georithm/Intersection.hpp"
 #include "../include/georithm/Intersects.hpp"
 #include "../include/georithm/Rect.hpp"
