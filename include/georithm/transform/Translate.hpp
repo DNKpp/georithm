@@ -3,8 +3,8 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          https://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef GEORITHM_TRANSFORM_TRANSLATION_HPP
-#define GEORITHM_TRANSFORM_TRANSLATION_HPP
+#ifndef GEORITHM_TRANSFORM_TRANSLATE_HPP
+#define GEORITHM_TRANSFORM_TRANSLATE_HPP
 
 #pragma once
 
@@ -13,28 +13,28 @@
 namespace georithm::transform
 {
 	template <VectorObject TVectorType>
-	class Translation
+	class Translate
 	{
 	public:
 		using VectorType = TVectorType;
 
-		constexpr Translation() noexcept = default;
+		constexpr Translate() noexcept = default;
 		/*ToDo: c++20
 		constexpr */
-		~Translation() noexcept = default;
+		~Translate() noexcept = default;
 
-		template <std::convertible_to<TVectorType> T>
-		explicit constexpr Translation(T&& translation) noexcept :
+		template <std::convertible_to<VectorType> T>
+		explicit constexpr Translate(T&& translation) noexcept :
 			m_Translation{ std::forward<T>(translation) }
 		{
 		}
 
-		constexpr Translation(const Translation&) = default;
-		constexpr Translation& operator =(const Translation&) = default;
-		constexpr Translation(Translation&&) = default;
-		constexpr Translation& operator =(Translation&&) = default;
+		constexpr Translate(const Translate&) = default;
+		constexpr Translate& operator =(const Translate&) = default;
+		constexpr Translate(Translate&&) = default;
+		constexpr Translate& operator =(Translate&&) = default;
 
-		[[nodiscard]] constexpr bool operator ==(const Translation&) const = default;
+		[[nodiscard]] constexpr bool operator ==(const Translate&) const = default;
 
 		[[nodiscard]] constexpr const VectorType& translation() const noexcept
 		{
@@ -53,7 +53,7 @@ namespace georithm::transform
 		}
 
 	private:
-		TVectorType m_Translation;
+		VectorType m_Translation;
 	};
 }
 
