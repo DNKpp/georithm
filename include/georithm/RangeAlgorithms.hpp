@@ -8,29 +8,34 @@
 
 #pragma once
 
-#include <type_traits>
 #include <iterator>
+#include <type_traits>
 
 #include "Concepts.hpp"
 
 namespace georithm::detail
 {
-	template <class Fn, class ForwardIt, class InputIt>
-	concept ZipElementsInvocable = invocable_r<Fn, typename std::iterator_traits<ForwardIt>::value_type, typename std::iterator_traits<ForwardIt>::value_type,
-												typename std::iterator_traits<InputIt>::value_type>;
+	template <class TFn, class TForwardIt, class TInputIt>
+	concept ZipElementsInvocable = invocable_r<TFn,
+												typename std::iterator_traits<TForwardIt>::value_type,
+												typename std::iterator_traits<TForwardIt>::value_type,
+												typename std::iterator_traits<TInputIt>::value_type>;
 }
 
 namespace georithm
 {
-	template <std::forward_iterator ForwardIt, std::sentinel_for<ForwardIt> ForwardItSentinel, std::input_iterator
-		InputIt, detail::ZipElementsInvocable<ForwardIt, InputIt> BinaryOp>
-	constexpr void zip_elements(ForwardIt first, ForwardItSentinel last, InputIt secFirst, BinaryOp op)
-	noexcept(std::is_nothrow_invocable_v<BinaryOp, typename std::iterator_traits<ForwardIt>::value_type, typename std::iterator_traits<InputIt>::value_type>)
+	template <std::forward_iterator TForwardIt, std::sentinel_for<TForwardIt> ForwardItSentinel, std::input_iterator TInputIt, detail::ZipElementsInvocable<
+		TForwardIt, TInputIt> TBinaryOp>
+	constexpr void zip_elements(TForwardIt first,
+								ForwardItSentinel last,
+								TInputIt secFirst,
+								TBinaryOp op
+	)
+	noexcept(std::is_nothrow_invocable_v<TBinaryOp, typename std::iterator_traits<TForwardIt>::value_type, typename std::iterator_traits<TInputIt>::value_type>)
 	{
 		while (first != last)
 		{
-			// ToDo: *first = std::invoke(op, *first, *secFirst);
-			*first = op(*first, *secFirst);
+			*first = std::invoke(op, *first, *secFirst);
 			++first;
 			++secFirst;
 		}
