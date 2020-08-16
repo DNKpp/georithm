@@ -144,8 +144,9 @@ namespace georithm
 	template <class T>
 	concept GeometricObject = requires(const std::remove_cvref_t<T>& object)
 	{
+		typename T::ValueType;
 		typename T::VectorType;
-		{ isNull(object) }->std::convertible_to<bool>;
+		{ isNull(object) } -> std::convertible_to<bool>;
 	};
 
 	template <class T, DimensionDescriptor_t Dim>

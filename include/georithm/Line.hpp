@@ -20,6 +20,7 @@ namespace georithm
 	{
 	public:
 		using VectorType = TVectorType;
+		using ValueType = typename VectorType::ValueType;
 		constexpr static LineType type{ TLineType };
 
 		constexpr BasicLine() noexcept = default;

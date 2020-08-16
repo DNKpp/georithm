@@ -21,7 +21,9 @@ namespace georithm
 		public TTransformer...
 	{
 	public:
+		using ValueType = T;
 		using VectorType = Vector<T, 2>;
+		constexpr static std::size_t transformerCount = sizeof...(TTransformer);
 
 		constexpr Rect() noexcept = default;
 		/*ToDo: c++20
