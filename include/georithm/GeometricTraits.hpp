@@ -8,18 +8,25 @@
 
 #pragma once
 
-#include "Defines.hpp"
+#include <type_traits>
+
+#include "georithm/BasicConcepts.hpp"
+#include "georithm/Defines.hpp"
 
 namespace georithm
 {
 	template <class TGeo>
+	requires requires (const std::remove_cvref_t<TGeo>& object)
+	{
+		typename TGeo::VectorType;
+	}
 	struct GeometricTraits
 	{
 		using VectorType = typename TGeo::VectorType;
 		using DimensionDescriptorType = typename VectorType::DimensionDescriptorType;
 		using ValueType = typename VectorType::ValueType;
 
-		constexpr static DimensionDescriptorType Dimensions{ VectorType::Dimensions };
+		constexpr static DimensionDescriptorType dimensions{ VectorType::dimensions };
 	};
 }
 
