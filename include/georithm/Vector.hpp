@@ -13,11 +13,11 @@
 #include <cassert>
 #include <cmath>
 #include <concepts>
+#include <functional>
 #include <numeric>
 
 #include "georithm/ArithmeticOperators.hpp"
 #include "georithm/Concepts.hpp"
-#include "georithm/RangeAlgorithms.hpp"
 
 namespace georithm
 {
@@ -53,10 +53,10 @@ namespace georithm
 		requires (!std::is_same_v<T2, T> && std::convertible_to<T2, T>)
 		explicit constexpr Vector(const Vector<T2, TDim>& other) noexcept
 		{
-			std::transform(std::begin(other),
-							std::end(other),
+			std::transform(std::cbegin(other),
+							std::cend(other),
 							std::begin(m_Values),
-							[](T2 value) -> T { return static_cast<T>(value); }
+							[](T2 value) { return static_cast<T>(value); }
 						);
 		}
 
@@ -123,10 +123,11 @@ namespace georithm
 		requires Addable<T, T2>
 		constexpr Vector& operator +=(const Vector<T2, TDim>& other) noexcept
 		{
-			zip_elements(std::begin(m_Values),
-						std::end(m_Values),
-						std::begin(other.m_Values),
-						[](auto lhs, const auto& rhs) { return lhs += static_cast<T>(rhs); }
+			std::transform(std::cbegin(m_Values),
+							std::cend(m_Values),
+							std::cbegin(other.m_Values),
+							std::begin(m_Values),
+							[](const auto& lhs, const auto& rhs) { return lhs + static_cast<T>(rhs); }
 						);
 			return *this;
 		}
@@ -135,10 +136,11 @@ namespace georithm
 		requires Subtractable<T, T2>
 		constexpr Vector& operator -=(const Vector<T2, TDim>& other) noexcept
 		{
-			zip_elements(std::begin(m_Values),
-						std::end(m_Values),
-						std::begin(other.m_Values),
-						[](auto lhs, const auto& rhs) { return lhs -= static_cast<T>(rhs); }
+			std::transform(std::cbegin(m_Values),
+							std::cend(m_Values),
+							std::cbegin(other.m_Values),
+							std::begin(m_Values),
+							[](const auto& lhs, const auto& rhs) { return lhs - static_cast<T>(rhs); }
 						);
 			return *this;
 		}
@@ -160,7 +162,7 @@ namespace georithm
 		{
 			std::for_each(std::begin(m_Values),
 						std::end(m_Values),
-						[&other](auto& lhs) { return lhs -= static_cast<T>(other); }
+						[&other](auto& lhs) { lhs -= static_cast<T>(other); }
 						);
 			return *this;
 		}
@@ -171,7 +173,7 @@ namespace georithm
 		{
 			std::for_each(std::begin(m_Values),
 						std::end(m_Values),
-						[&other](auto& lhs) { return lhs *= static_cast<T>(other); }
+						[&other](auto& lhs) { lhs *= static_cast<T>(other); }
 						);
 			return *this;
 		}
@@ -182,7 +184,7 @@ namespace georithm
 		{
 			std::for_each(std::begin(rhs),
 						std::end(rhs),
-						[&lhs](auto& el) { return el *= static_cast<T>(lhs); }
+						[&lhs](auto& el) { el *= static_cast<T>(lhs); }
 						);
 			return rhs;
 		}
@@ -194,7 +196,7 @@ namespace georithm
 			assert(other != T2(0));
 			std::for_each(std::begin(m_Values),
 						std::end(m_Values),
-						[&other](auto& lhs) { return lhs /= static_cast<T>(other); }
+						[&other](auto& lhs) { lhs /= static_cast<T>(other); }
 						);
 			return *this;
 		}
@@ -206,7 +208,7 @@ namespace georithm
 			assert(other != T2(0));
 			std::for_each(std::begin(m_Values),
 						std::end(m_Values),
-						[&other](auto& lhs) { return lhs %= other; }
+						[&other](auto& lhs) { lhs %= other; }
 						);
 			return *this;
 		}
@@ -282,18 +284,19 @@ namespace georithm
 		}
 	};
 
-	template <class T, class... U>
-	Vector(T, U ...) -> Vector<T, 1 + sizeof...(U)>;
+	template <class... T>
+	Vector(T&&...) -> Vector<std::common_type_t<T...>, sizeof...(T)>;
 
 	template <VectorObject TVector>
 	requires ConstForwardIteratable<TVector>
 	[[nodiscard]] constexpr typename TVector::ValueType lengthSq(const TVector& vector) noexcept
 	{
-		return std::accumulate(std::cbegin(vector),
-								std::cend(vector),
-								typename TVector::ValueType(0),
-								[](auto value, const auto& element) { return value + element * element; }
-							);
+		using T = typename TVector::ValueType;
+		return std::reduce(std::cbegin(vector),
+							std::cend(vector),
+							typename TVector::ValueType{},
+							[](T value, T element) { return value + element * element; }
+						);
 	}
 
 	template <VectorObject TVector1, VectorObject TVector2>
@@ -302,7 +305,13 @@ namespace georithm
 	Multiplicable<typename TVector1::ValueType, typename TVector2::ValueType>
 	[[nodiscard]] constexpr typename TVector1::ValueType scalarProduct(const TVector1& lhs, const TVector2& rhs) noexcept
 	{
-		return std::inner_product(std::cbegin(lhs), std::cend(lhs), std::cbegin(rhs), typename TVector1::ValueType(0));
+		return std::transform_reduce(std::cbegin(lhs),
+									std::cend(lhs),
+									std::cbegin(rhs),
+									typename TVector1::ValueType{},
+									std::plus<>(),
+									std::multiplies<>()
+									);
 	}
 
 	template <VectorObject TVector>
@@ -349,11 +358,11 @@ namespace georithm
 	requires std::signed_integral<typename TVector::ValueType>
 	[[nodiscard]] constexpr TVector rotate(TVector vector, double radian) noexcept
 	{
-		auto rotated = rotate(static_cast<Vector<double, 2>>(vector), radian);
-		zip_elements(std::begin(vector),
-					std::end(vector),
-					std::begin(rotated),
-					[](const auto& lhs, const auto& rhs) { return static_cast<typename TVector::ValueType>(std::llround(rhs)); }
+		const auto rotated = rotate(static_cast<Vector<double, 2>>(vector), radian);
+		std::transform(std::cbegin(rotated),
+						std::cend(rotated),
+						std::begin(vector),
+						[](double element) { return static_cast<typename TVector::ValueType>(std::llround(element)); }
 					);
 		return vector;
 	}

@@ -9,7 +9,6 @@
 #pragma once
 
 #include "georithm/Concepts.hpp"
-#include "georithm/RangeAlgorithms.hpp"
 
 namespace georithm::transform
 {
@@ -49,10 +48,11 @@ namespace georithm::transform
 
 		[[nodiscard]] constexpr VectorType transform(VectorType vec) const noexcept
 		{
-			zip_elements(std::begin(vec),
-						std::end(vec),
-						std::begin(m_Scale),
-						[](auto lhs, const auto& rhs) { return lhs * rhs; }
+			std::transform(std::cbegin(vec),
+							std::cend(vec),
+							std::cbegin(m_Scale),
+							std::begin(vec),
+							[](const auto& lhs, const auto& rhs) { return lhs * rhs; }
 						);
 			return vec;
 		}
