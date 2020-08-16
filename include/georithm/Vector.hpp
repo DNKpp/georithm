@@ -117,7 +117,7 @@ namespace georithm
 			return m_Values[2];
 		}
 
-		constexpr bool operator ==(const Vector& other) const noexcept = default;
+		[[nodiscard]] constexpr bool operator ==(const Vector&) const noexcept = default;
 
 		template <class T2>
 		requires Addable<T, T2>
