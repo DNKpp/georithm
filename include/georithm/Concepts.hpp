@@ -9,171 +9,77 @@
 #pragma once
 
 #include <concepts>
-#include <iterator>
 #include <type_traits>
 
-#include "Defines.hpp"
-#include "GeometricTraits.hpp"
+#include "georithm/BasicConcepts.hpp"
+#include "georithm/Defines.hpp"
+#include "georithm/GeometricTraits.hpp"
 
 namespace georithm
 {
-	template <class T, class T2 = T>
-	concept AddAssignable = requires(T lhs, T2 rhs)
-	{
-		{ lhs += rhs };
-	};
-
-	template <class T, class T2 = T>
-	concept SubtractAssignable = requires(T lhs, T2 rhs)
-	{
-		{ lhs -= rhs };
-	};
-
-	template <class T, class T2 = T>
-	concept MultiplyAssignable = requires(T lhs, T2 rhs)
-	{
-		{ lhs *= rhs };
-	};
-
-	template <class T, class T2 = T>
-	concept DivideAssignable = requires(T lhs, T2 rhs)
-	{
-		{ lhs /= rhs };
-	};
-
-	template <class T, class T2 = T>
-	concept ModuloAssignable = requires(T lhs, T2 rhs)
-	{
-		{ lhs %= rhs };
-	};
-
-	template <class T, class T2 = T>
-	concept Addable = AddAssignable<T, T2> && requires(T lhs, T2 rhs)
-	{
-		{ lhs + rhs }->std::convertible_to<T>;
-	};
-
-	template <class T, class T2 = T>
-	concept Subtractable = SubtractAssignable<T, T2> && requires(T lhs, T2 rhs)
-	{
-		{ lhs - rhs } -> std::convertible_to<T>;
-	};
-
-	template <class T, class T2 = T>
-	concept Multiplicable = MultiplyAssignable<T, T2> && requires(T lhs, T2 rhs)
-	{
-		{ lhs * rhs } -> std::convertible_to<T>;
-	};
-
-	template <class T, class T2 = T>
-	concept Divisable = DivideAssignable<T, T2> && requires(T lhs, T2 rhs)
-	{
-		{ lhs / rhs } -> std::convertible_to<T>;
-	};
-
-	template <class T, class T2 = T>
-	concept Moduloable = ModuloAssignable<T, T2> && requires(T lhs, T2 rhs)
-	{
-		{ lhs % rhs }->std::convertible_to<T>;
-	};
-
 	template <class TGeo1, class TGeo2>
-	concept EqualDimensions = (GeometricTraits<TGeo1>::Dimensions == GeometricTraits<TGeo2>::Dimensions);
-
-	template <class T>
-	concept ForwardIteratable = requires(std::remove_cvref_t<T>& object)
-	{
-		{ std::begin(object) }->std::forward_iterator;
-		{ std::end(object) }->std::sentinel_for<decltype(std::begin(object))>;
-	};
-
-	template <class T>
-	concept ConstForwardIteratable = requires(const std::remove_cvref_t<T>& object)
-	{
-		{ std::begin(object) }->std::forward_iterator;
-		{ std::cbegin(object) }->std::forward_iterator;
-		{ std::end(object) }->std::sentinel_for<decltype(std::cbegin(object))>;
-		{ std::cend(object) }->std::sentinel_for<decltype(std::cbegin(object))>;
-	};
-
-	template <class T>
-	concept BiDirectionalIteratable = ForwardIteratable<T> && requires(std::remove_cvref_t<T>& object)
-	{
-		{ std::rbegin(object) }->std::bidirectional_iterator;
-		{ std::rend(object) }->std::sentinel_for<decltype(std::rbegin(object))>;
-	};
-
-	template <class T>
-	concept ConstBiDirectionalIteratable = ConstForwardIteratable<T> && requires(const std::remove_cvref_t<T>& object)
-	{
-		{ std::rbegin(object) }->std::bidirectional_iterator;
-		{ std::crbegin(object) }->std::bidirectional_iterator;
-		{ std::rend(object) }->std::sentinel_for<decltype(std::crbegin(object))>;
-		{ std::crend(object) }->std::sentinel_for<decltype(std::crbegin(object))>;
-	};
+	concept EqualDimensions = GeometricTraits<TGeo1>::dimensions == GeometricTraits<TGeo2>::dimensions;
 
 	template <class T>
 	concept ValueType = Addable<T> && Subtractable<T> && Multiplicable<T> && Divisable<T> && std::equality_comparable<T>
 	;
 
 	template <auto TValue>
-	concept Cardinality = std::convertible_to<decltype(TValue), DimensionDescriptor_t> && (TValue > 0);
+	concept Cardinality = implicit_convertible_to<decltype(TValue), DimensionDescriptor_t> && TValue > 0;
 
 	template <class T>
 	concept VectorObject = requires(const std::remove_cvref_t<T>& vec)
 	{
 		typename T::ValueType;
-		{ T::Dimensions }->std::convertible_to<DimensionDescriptor_t>;
-		{ vec[std::declval<DimensionDescriptor_t>()] }->std::convertible_to<typename T::ValueType>;
+		{ T::dimensions } -> implicit_convertible_to<DimensionDescriptor_t>;
+		{ vec[std::declval<DimensionDescriptor_t>()] } -> implicit_convertible_to<typename T::ValueType>;
 	};
 
-	template <class T, DimensionDescriptor_t Dim>
-	concept NDimensionalVectorObject = VectorObject<T> && (T::Dimensions == Dim);
+	template <class T, DimensionDescriptor_t TDim>
+	concept NDimensionalVectorObject = VectorObject<T> && T::dimensions == TDim;
 
-	template <class Fn, class R, class... TArgs>
-	concept invocable_r = std::is_invocable_r_v<R, Fn, TArgs...>;
-
-	template <class T, class ExpectedVectorType>
+	template <class T, class TExpectedVectorType>
 	concept TransformComponent = std::default_initializable<T> && requires(const std::remove_cvref_t<T>& component)
 	{
 		typename T::ValueType;
 		typename T::VectorType;
-		{ component.transform(std::declval<ExpectedVectorType>()) }->std::convertible_to<ExpectedVectorType>;
+		{ component.transform(std::declval<TExpectedVectorType>()) } -> implicit_convertible_to<TExpectedVectorType>;
 	};
 
 	template <class T>
 	concept GeometricObject = requires(const std::remove_cvref_t<T>& object)
 	{
-		typename T::ValueType;
-		typename T::VectorType;
-		{ isNull(object) } -> std::convertible_to<bool>;
+		typename GeometricTraits<T>::ValueType;
+		typename GeometricTraits<T>::VectorType;
+		{ GeometricTraits<T>::dimensions };
+		{ isNull(object) } -> implicit_convertible_to<bool>;
 	};
 
-	template <class T, DimensionDescriptor_t Dim>
-	concept NDimensionalObject = GeometricObject<T> && (T::VectorType::Dimensions == Dim);
+	template <class T, DimensionDescriptor_t TDim>
+	concept NDimensionalObject = GeometricObject<T>/* && GeometricTraits<T>::dimensions == TDim*/;
 
 	template <class T>
 	concept LineObject = GeometricObject<T> && requires(const std::remove_cvref_t<T>& line)
 	{
 		{ T::type };
-		{ line.firstVertex() }->std::convertible_to<typename T::VectorType>;
-		{ line.secondVertex() }->std::convertible_to<typename T::VectorType>;
+		{ line.firstVertex() } -> implicit_convertible_to<typename T::VectorType>;
+		{ line.secondVertex() } -> implicit_convertible_to<typename T::VectorType>;
 	};
 
-	template <class T, DimensionDescriptor_t Dim>
-	concept NDimensionalLineObject = NDimensionalObject<T, Dim> && LineObject<T>;
+	template <class T, DimensionDescriptor_t TDim>
+	concept NDimensionalLineObject = NDimensionalObject<T, TDim> && LineObject<T>;
 
 	template <class T>
 	concept PolygonalObject = GeometricObject<T> && requires(const std::remove_cvref_t<T>& object)
 	{
-		{ object.vertexCount() } -> std::convertible_to<VertexIndex_t>;
-		{ object.edgeCount() } -> std::convertible_to<EdgeIndex_t>;
-		{ object.vertex(std::declval<VertexIndex_t>()) }->VectorObject;
-		{ object.edge(std::declval<VertexIndex_t>()) }->LineObject;
+		{ vertexCount(object) } -> implicit_convertible_to<VertexIndex_t>;
+		{ edgeCount(object) } -> implicit_convertible_to<EdgeIndex_t>;
+		{ vertex(object, std::declval<VertexIndex_t>()) } -> VectorObject;
+		{ edge(object, std::declval<VertexIndex_t>()) } -> LineObject;
 	};
 
-	template <class T, DimensionDescriptor_t Dim>
-	concept NDimensionalPolygonalObject = NDimensionalObject<T, Dim> && PolygonalObject<T>;
+	template <class T, DimensionDescriptor_t TDim>
+	concept NDimensionalPolygonalObject = NDimensionalObject<T, TDim> && PolygonalObject<T>;
 
 	//template <class T>
 	//concept Circular = GeometricObject && requires (T object)
