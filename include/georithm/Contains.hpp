@@ -18,37 +18,85 @@
 
 namespace georithm::detail
 {
-	//template <class TRect, NDimensionalVectorObject<2> TVector>
-	//requires IsRect_v<TRect>
-	//constexpr bool containsImpl(const TRect& rect, const TVector& vector) noexcept
-	//{
-	//	assert(!isNull(rect));
+	// not sure if this would be right to expose to the general georithm namespace; possibly to concrete
+	template <class T>
+	struct IsRect :
+		std::false_type
+	{
+	};
+	
+	template <class T, class... TTransformer>
+		struct IsRect<Rect<T, TTransformer...>> :
+		std::true_type
+	{
+	};
 
-	//	// thanks to this post: https://math.stackexchange.com/a/190373
-	//	auto vertex0 = vertex(rect, 0);
-	//	auto AM = vector - vertex0;
-	//	auto AB = vertex(rect, 1) - vertex0;
-	//	auto AD = vertex(rect, 3) - vertex0;
+	template <class T>
+	constexpr bool IsRect_v =  IsRect<T>::value;
 
-	//	auto scalar1 = scalarProduct(AM, AB);
-	//	auto scalar2 = scalarProduct(AB, AB);
-	//	auto scalar3 = scalarProduct(AM, AD);
-	//	auto scalar4 = scalarProduct(AD, AD);
-
-	//	return 0 <= scalar1 && scalar1 <= scalar2 && 0 <= scalar3 && scalar3 <= scalar4;
-	//}
-
+	template <class T>
+	concept RectType = NDimensionalPolygonalObject<T, 2> && IsRect_v<T>;
+	
+	
 	template <class T, NDimensionalVectorObject<2> TVector>
 	requires std::convertible_to<T, typename TVector::ValueType>
-	constexpr bool containsImpl(const AABB_t<T>& rect, const TVector& point) noexcept
+	[[nodiscard]] constexpr bool contains(const AABB_t<T>& rect, const TVector& point) noexcept
 	{
 		assert(!isNull(rect));
 		return leftBounding(rect) <= point.x() && point.x() <= rightBounding(rect) && topBounding(rect) <= point.y() && point.y() <= bottomBounding(rect);
 	}
 
+	template <class T>
+	[[nodiscard]] constexpr bool contains(const AABB_t<T>& outerRect, const AABB_t<T>& innerRect) noexcept
+	{
+		assert(!isNull(outerRect) && !isNull(innerRect));
+
+		auto outerTopLeft = topLeftBounding(outerRect);
+		auto innerTopLeft = topLeftBounding(innerRect);
+		auto outerBottomRight = bottomRightBounding(outerRect);
+		auto innerBottomRight = topLeftBounding(outerRect);
+		return outerTopLeft.x() <= innerTopLeft.x() && outerTopLeft.y() <= innerTopLeft.y() &&
+			innerBottomRight.x() <= outerBottomRight.x() && innerBottomRight.y() <= outerBottomRight.y();
+	}
+
+	template <RectType TRect, NDimensionalVectorObject<2> TVector>
+	requires (0 < TRect::transformerCount) && std::is_same_v<typename TRect::ValueType, typename TVector::ValueType>
+	[[nodiscard]] constexpr bool contains(const TRect& rect, const TVector& point) noexcept
+	{
+		assert(!isNull(rect));
+
+		// thanks to this post: https://math.stackexchange.com/a/190373
+		// ToDo: potential issue here if vertex index gets changed... Think about a better solution
+		auto vertex0 = vertex(rect, 0);
+		auto AM = point - vertex0;
+		auto AB = vertex(rect, 1) - vertex0;
+		auto AD = vertex(rect, 3) - vertex0;
+
+		auto scalar1 = scalarProduct(AM, AB);
+		auto scalar2 = scalarProduct(AB, AB);
+		auto scalar3 = scalarProduct(AM, AD);
+		auto scalar4 = scalarProduct(AD, AD);
+
+		return 0 <= scalar1 && scalar1 <= scalar2 && 0 <= scalar3 && scalar3 <= scalar4;
+	}
+
+	template <RectType TRect, NDimensionalPolygonalObject<2> TPolygon>
+	requires (0 < TRect::transformerCount) && std::is_same_v<typename TRect::ValueType, typename TPolygon::ValueType>
+	[[nodiscard]] constexpr bool contains(const TRect& outerRect, const TPolygon& innerPolygon) noexcept
+	{
+		assert(!isNull(outerRect) && !isNull(innerPolygon));
+
+		for (VertexIndex_t i = 0, count = vertexCount(innerPolygon); i < count; ++i)
+		{
+			if (!contains(outerRect, vertex(innerPolygon, i)))
+				return false;
+		}
+		return true;
+	}
+
 	//template <NDimensionalPolygonalObject<2> TPolygon, NDimensionalVectorObject<2> TVector>
 	//requires (!IsRect_v<TPolygon>)
-	//constexpr bool containsImpl(const TPolygon& polygon, const TVector& vector) noexcept
+	//constexpr bool contains(const TPolygon& polygon, const TVector& vector) noexcept
 	//{
 	//	assert(!isNull(polygon));
 
@@ -115,9 +163,9 @@ namespace georithm::detail
 namespace georithm
 {
 	template <GeometricObject TGeo1, class T>
-	constexpr bool contains(const TGeo1& lhs, const T& rhs) noexcept
+	[[nodiscard]] constexpr bool contains(const TGeo1& lhs, const T& rhs) noexcept
 	{
-		return detail::containsImpl(lhs, rhs);
+		return detail::contains(lhs, rhs);
 	}
 }
 
