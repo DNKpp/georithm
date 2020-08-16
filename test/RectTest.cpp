@@ -163,12 +163,12 @@ TEST_CASE("Rect make bounding rect test", "[Rect]")
 	using Vector2 = Vector<int, 2>;
 	AABB_t<int> rect{ {1, 1} };
 
-	auto bb = makeBoundingRect(rect);
+	auto bb = boundingRect(rect);
 
 	REQUIRE(!(rect != bb));
 
 	AABB_t<int> transRect{ { 10, 10 }, { -5, -5 } };
-	bb = makeBoundingRect(transRect);
+	bb = boundingRect(transRect);
 	REQUIRE(transRect != bb);
 	REQUIRE(bb.position() == transRect.position() + transRect.span());
 	REQUIRE(bb.position() == abs(transRect.span()));
@@ -186,7 +186,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 
 		SECTION("zero")
 		{
-			auto bb = makeBoundingRect(rect);
+			auto bb = boundingRect(rect);
 			REQUIRE(bb.position() == Vector2F_t::zero());
 			REQUIRE(bb.span() == Vector2F_t{ 1.f, 1.f });
 		}
@@ -218,7 +218,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 
 			rect.translation() = position;
 			rect.position() = position;
-			auto bb = makeBoundingRect(rect);
+			auto bb = boundingRect(rect);
 			REQUIRE(bb.position() == position + position);
 			REQUIRE(bb.span() == Vector2F_t{ 1.f, 1.f });
 		}
@@ -230,7 +230,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 
 		SECTION("1:1")
 		{
-			auto bb = makeBoundingRect(rect);
+			auto bb = boundingRect(rect);
 			REQUIRE(bb.position() == Vector2F_t::zero());
 			REQUIRE(bb.span() == Vector2F_t{ 1.f, 1.f });
 		}
@@ -238,7 +238,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 		SECTION("mirror")
 		{
 			rect.scale() = { -1.f, -1.f };
-			auto bb = makeBoundingRect(rect);
+			auto bb = boundingRect(rect);
 			REQUIRE(bb.position() == Vector2F_t{ -1.f, -1.f });
 			REQUIRE(bb.span() == Vector2F_t{ 1.f, 1.f });
 		}
@@ -246,7 +246,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 		SECTION("downscale")
 		{
 			rect.scale() = { 0.5f, 0.3f };
-			auto bb = makeBoundingRect(rect);
+			auto bb = boundingRect(rect);
 			REQUIRE(bb.position() == Vector2F_t::zero());
 			REQUIRE(bb.span() == Vector2F_t{ 0.5f, 0.3f });
 		}
@@ -254,7 +254,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 		SECTION("upscale")
 		{
 			rect.scale() = { 3.f, 2.f };
-			auto bb = makeBoundingRect(rect);
+			auto bb = boundingRect(rect);
 			REQUIRE(bb.position() == Vector2F_t::zero());
 			REQUIRE(bb.span() == Vector2F_t{ 3.f, 2.f });
 		}
@@ -269,7 +269,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 
 		SECTION("1:1")
 		{
-			auto bb = makeBoundingRect(rect);
+			auto bb = boundingRect(rect);
 			REQUIRE(bb.position() == Vector2F_t::zero());
 			REQUIRE(bb.span() == Vector2F_t{ 1.f, 1.f });
 		}
@@ -277,7 +277,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 		//SECTION("mirror")
 		//{
 		//	rect.scale() = { -1.f, -1.f };
-		//	auto bb = makeBoundingRect(rect);
+		//	auto bb = boundingRect(rect);
 		//	REQUIRE(bb.position() == Vector2F_t{ -1.f, -1.f });
 		//	REQUIRE(bb.span() == Vector2F_t{ 1.f, 1.f });
 		//}
@@ -285,7 +285,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 		//SECTION("downscale")
 		//{
 		//	rect.scale() = { 0.5f, 0.3f };
-		//	auto bb = makeBoundingRect(rect);
+		//	auto bb = boundingRect(rect);
 		//	REQUIRE(bb.position() == Vector2F_t::zero());
 		//	REQUIRE(bb.span() == Vector2F_t{ 0.5f, 0.3f });
 		//}
@@ -293,7 +293,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 		//SECTION("upscale")
 		//{
 		//	rect.scale() = { 3.f, 2.f };
-		//	auto bb = makeBoundingRect(rect);
+		//	auto bb = boundingRect(rect);
 		//	REQUIRE(bb.position() == Vector2F_t::zero());
 		//	REQUIRE(bb.span() == Vector2F_t{ 3.f, 2.f });
 		//}
@@ -306,7 +306,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 
 		SECTION("zero")
 		{
-			auto bb = makeBoundingRect(rect);
+			auto bb = boundingRect(rect);
 			REQUIRE(bb.position() == Vector2F_t::zero());
 			REQUIRE(bb.span() == Vector2F_t{ 1.f, 1.f });
 		}
@@ -315,7 +315,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 		{
 			rect.shear() = { 20.f, 0.f };
 			
-			auto bb = makeBoundingRect(rect);
+			auto bb = boundingRect(rect);
 			REQUIRE(bb.position() == Vector2F_t::zero());
 			REQUIRE(bb.span() == Vector2F_t{ 21.f, 1.f });
 			REQUIRE(vertex(rect, 3) == Vector2F_t{ 20.f, 1.f });
@@ -324,7 +324,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 		//SECTION("mirror")
 		//{
 		//	rect.scale() = { -1.f, -1.f };
-		//	auto bb = makeBoundingRect(rect);
+		//	auto bb = boundingRect(rect);
 		//	REQUIRE(bb.position() == Vector2F_t{ -1.f, -1.f });
 		//	REQUIRE(bb.span() == Vector2F_t{ 1.f, 1.f });
 		//}
@@ -332,7 +332,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 		//SECTION("downscale")
 		//{
 		//	rect.scale() = { 0.5f, 0.3f };
-		//	auto bb = makeBoundingRect(rect);
+		//	auto bb = boundingRect(rect);
 		//	REQUIRE(bb.position() == Vector2F_t::zero());
 		//	REQUIRE(bb.span() == Vector2F_t{ 0.5f, 0.3f });
 		//}
@@ -340,14 +340,14 @@ TEST_CASE("Rect transform tests", "[Rect]")
 		//SECTION("upscale")
 		//{
 		//	rect.scale() = { 3.f, 2.f };
-		//	auto bb = makeBoundingRect(rect);
+		//	auto bb = boundingRect(rect);
 		//	REQUIRE(bb.position() == Vector2F_t::zero());
 		//	REQUIRE(bb.span() == Vector2F_t{ 3.f, 2.f });
 		//}
 	}
 
 	//AABB_t<int> transRect{ { 10, 10 }, { -5, -5 } };
-	//bb = makeBoundingRect(transRect);
+	//bb = boundingRect(transRect);
 	//REQUIRE(transRect != bb);
 	//REQUIRE(bb.position() == transRect.position() + transRect.span());
 	//REQUIRE(bb.position() == abs(transRect.span()));
