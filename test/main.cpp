@@ -11,7 +11,5 @@
 int main(int argc, char** argv)
 {
 	const int result = Catch::Session().run(argc, argv);
-
-	std::cin.get();
 	return result;
 }
