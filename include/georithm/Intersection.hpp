@@ -12,9 +12,9 @@
 #include <optional>
 #include <tuple>
 
-#include "Concepts.hpp"
-#include "GeometricTraits.hpp"
-#include "Utility.hpp"
+#include "georithm/Concepts.hpp"
+#include "georithm/GeometricTraits.hpp"
+#include "georithm/Utility.hpp"
 
 namespace georithm::detail
 {

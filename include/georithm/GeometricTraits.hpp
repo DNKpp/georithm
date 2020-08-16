@@ -10,9 +10,6 @@
 
 #include <type_traits>
 
-#include "georithm/BasicConcepts.hpp"
-#include "georithm/Defines.hpp"
-
 namespace georithm
 {
 	template <class TGeo>

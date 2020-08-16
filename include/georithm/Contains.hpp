@@ -10,11 +10,11 @@
 
 #include <cassert>
 
-#include "Bounding.hpp"
-#include "Concepts.hpp"
-#include "GeometricTraits.hpp"
-#include "Rect.hpp"
-#include "Utility.hpp"
+#include "georithm/Bounding.hpp"
+#include "georithm/Concepts.hpp"
+#include "georithm/GeometricTraits.hpp"
+#include "georithm/Rect.hpp"
+#include "georithm/Utility.hpp"
 
 namespace georithm::detail
 {

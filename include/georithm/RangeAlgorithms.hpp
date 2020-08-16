@@ -11,7 +11,7 @@
 #include <iterator>
 #include <type_traits>
 
-#include "Concepts.hpp"
+#include "georithm/BasicConcepts.hpp"
 
 namespace georithm::detail
 {

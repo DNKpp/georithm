@@ -15,9 +15,9 @@
 #include <concepts>
 #include <numeric>
 
-#include "ArithmeticOperators.hpp"
-#include "Concepts.hpp"
-#include "RangeAlgorithms.hpp"
+#include "georithm/ArithmeticOperators.hpp"
+#include "georithm/Concepts.hpp"
+#include "georithm/RangeAlgorithms.hpp"
 
 namespace georithm
 {

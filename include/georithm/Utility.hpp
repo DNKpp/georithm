@@ -11,8 +11,8 @@
 #include <cassert>
 #include <concepts>
 
-#include "Concepts.hpp"
-#include "Defines.hpp"
+#include "georithm/Concepts.hpp"
+#include "georithm/Defines.hpp"
 
 namespace georithm
 {

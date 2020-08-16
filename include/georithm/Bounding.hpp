@@ -10,12 +10,12 @@
 
 #include <algorithm>
 
-#include "Concepts.hpp"
-#include "Defines.hpp"
-#include "GeometricTraits.hpp"
-#include "Rect.hpp"
-#include "Utility.hpp"
-#include "Vector.hpp"
+#include "georithm/Concepts.hpp"
+#include "georithm/Defines.hpp"
+#include "georithm/GeometricTraits.hpp"
+#include "georithm/Rect.hpp"
+#include "georithm/Utility.hpp"
+#include "georithm/Vector.hpp"
 
 namespace georithm::detail
 {

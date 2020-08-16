@@ -10,10 +10,10 @@
 
 #include <cassert>
 
-#include "Concepts.hpp"
-#include "Defines.hpp"
-#include "Line.hpp"
-#include "Vector.hpp"
+#include "georithm/Concepts.hpp"
+#include "georithm/Defines.hpp"
+#include "georithm/Line.hpp"
+#include "georithm/Vector.hpp"
 
 namespace georithm
 {

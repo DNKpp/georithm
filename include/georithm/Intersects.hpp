@@ -11,8 +11,8 @@
 #include <cassert>
 #include <tuple>
 
-#include "Concepts.hpp"
-#include "Utility.hpp"
+#include "georithm/Concepts.hpp"
+#include "georithm/Utility.hpp"
 
 namespace georithm::detail
 {
