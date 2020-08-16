@@ -43,7 +43,7 @@ namespace georithm::detail
 	constexpr bool containsImpl(const AABB_t<T>& rect, const TVector& point) noexcept
 	{
 		assert(!isNull(rect));
-		return left(rect) <= point.x() && point.x() <= right(rect) && top(rect) <= point.y() && point.y() <= bottom(rect);
+		return leftBounding(rect) <= point.x() && point.x() <= rightBounding(rect) && topBounding(rect) <= point.y() && point.y() <= bottomBounding(rect);
 	}
 
 	//template <NDimensionalPolygonalObject<2> TPolygon, NDimensionalVectorObject<2> TVector>
