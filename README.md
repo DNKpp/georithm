@@ -1,5 +1,5 @@
 # Georithm C++20 library
-![Test Cases](https://github.com/DNKpp/georithm/workflows/CMake%20Build%20Matrix/badge.svg?branch=master)
+![Build & Run Test](https://github.com/DNKpp/georithm/workflows/Build%20&%20Run%20Test/badge.svg?branch=master)
 
 ## Author
 Dominic Koepke  
