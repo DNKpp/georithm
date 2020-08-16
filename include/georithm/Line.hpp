@@ -8,10 +8,8 @@
 
 #pragma once
 
-#include <compare>
-
-#include "Defines.hpp"
 #include "Concepts.hpp"
+#include "Defines.hpp"
 
 namespace georithm
 {

@@ -24,22 +24,21 @@ namespace georithm::detail
 		std::false_type
 	{
 	};
-	
+
 	template <class T, class... TTransformer>
-		struct IsRect<Rect<T, TTransformer...>> :
+	struct IsRect<Rect<T, TTransformer...>> :
 		std::true_type
 	{
 	};
 
 	template <class T>
-	constexpr bool IsRect_v =  IsRect<T>::value;
+	constexpr bool IsRect_v = IsRect<T>::value;
 
 	template <class T>
 	concept RectType = NDimensionalPolygonalObject<T, 2> && IsRect_v<T>;
-	
-	
+
 	template <class T, NDimensionalVectorObject<2> TVector>
-	requires std::convertible_to<T, typename TVector::ValueType>
+	requires std::is_same_v<T, typename TVector::ValueType>
 	[[nodiscard]] constexpr bool contains(const AABB_t<T>& rect, const TVector& point) noexcept
 	{
 		assert(!isNull(rect));
@@ -60,7 +59,7 @@ namespace georithm::detail
 	}
 
 	template <RectType TRect, NDimensionalVectorObject<2> TVector>
-	requires (0 < TRect::transformerCount) && std::is_same_v<typename TRect::ValueType, typename TVector::ValueType>
+	requires (0 < TRect::transformerCount) && std::is_same_v<typename GeometricTraits<TRect>::ValueType, typename TVector::ValueType>
 	[[nodiscard]] constexpr bool contains(const TRect& rect, const TVector& point) noexcept
 	{
 		assert(!isNull(rect));
@@ -81,7 +80,7 @@ namespace georithm::detail
 	}
 
 	template <RectType TRect, NDimensionalPolygonalObject<2> TPolygon>
-	requires (0 < TRect::transformerCount) && std::is_same_v<typename TRect::ValueType, typename TPolygon::ValueType>
+	requires (0 < TRect::transformerCount) && std::is_same_v<typename GeometricTraits<TRect>::ValueType, typename GeometricTraits<TPolygon>::ValueType>
 	[[nodiscard]] constexpr bool contains(const TRect& outerRect, const TPolygon& innerPolygon) noexcept
 	{
 		assert(!isNull(outerRect) && !isNull(innerPolygon));

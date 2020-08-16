@@ -1,14 +1,13 @@
-
 //          Copyright Dominic Koepke 2017 - 2020.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          https://www.boost.org/LICENSE_1_0.txt)
 
 #include "catch.hpp"
-#include "../include/georithm/Line.hpp"
-#include "../include/georithm/Vector.hpp"
 #include "../include/georithm/Intersection.hpp"
 #include "../include/georithm/Intersects.hpp"
+#include "../include/georithm/Line.hpp"
+#include "../include/georithm/Vector.hpp"
 
 //TEST_CASE("Line constexpr compile test", "[Line]")
 //{
@@ -52,12 +51,12 @@ TEST_CASE("Line intersection test", "[Line]")
 {
 	using namespace georithm;
 
-	Line<Vector<float, 2>> line{ Vector{ 1.f, 2.f }, Vector{ 1.f, 1.f} };
+	Line<Vector<float, 2>> line{ Vector{ 1.f, 2.f }, Vector{ 1.f, 1.f } };
 	auto line2 = line;
 	auto interResult = intersection(line, line);
 	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::collinear);
 
-	line2.direction() = line2.direction() * (-1);
+	line2.direction() = line2.direction() * -1;
 	interResult = intersection(line, line2);
 	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::collinear);
 
@@ -74,12 +73,12 @@ TEST_CASE("Ray intersection test", "[Line]")
 {
 	using namespace georithm;
 
-	Ray<Vector<float, 2>> ray{ Vector{ 1.f, 2.f }, Vector{ 1.f, 1.f} };
+	Ray<Vector<float, 2>> ray{ Vector{ 1.f, 2.f }, Vector{ 1.f, 1.f } };
 
 	auto interResult = intersection(ray, ray);
 	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::collinear);
 
-	Ray<Vector<float, 2>> ray2{ Vector{ 1.f, 2.f }, Vector{ -1.f, -1.f} };
+	Ray<Vector<float, 2>> ray2{ Vector{ 1.f, 2.f }, Vector{ -1.f, -1.f } };
 	interResult = intersection(ray, ray2);
 	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::collinear);
 
@@ -108,12 +107,12 @@ TEST_CASE("Segment intersection test", "[Line]")
 {
 	using namespace georithm;
 
-	Segment<Vector<float, 2>> segment{ Vector{ 1.f, 2.f }, Vector{ 1.f, 1.f} };
+	Segment<Vector<float, 2>> segment{ Vector{ 1.f, 2.f }, Vector{ 1.f, 1.f } };
 
 	auto interResult = intersection(segment, segment);
 	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::collinear);
 
-	Segment<Vector<float, 2>> segment2{ Vector{ 1.f, 2.f }, Vector{ -1.f, -1.f} };
+	Segment<Vector<float, 2>> segment2{ Vector{ 1.f, 2.f }, Vector{ -1.f, -1.f } };
 	interResult = intersection(segment, segment2);
 	REQUIRE(std::get<0>(interResult) == LineIntersectionResult::collinear);
 

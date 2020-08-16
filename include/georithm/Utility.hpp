@@ -39,14 +39,20 @@ namespace georithm
 
 	template <class T>
 	[[nodiscard]] constexpr auto vertex(const T& object, VertexIndex_t index) noexcept -> decltype(object.vertex(index))
-	requires requires { { object.vertex(index) }->VectorObject; }
+	requires requires
+	{
+		{ object.vertex(index) } -> VectorObject;
+	}
 	{
 		return object.vertex(index);
 	}
 
 	template <class T>
 	[[nodiscard]] constexpr auto edge(const T& object, EdgeIndex_t index) noexcept -> decltype(object.edge(index))
-	requires requires { { object.edge(index) }->LineObject; }
+	requires requires
+	{
+		{ object.edge(index) }->LineObject;
+	}
 	{
 		return object.edge(index);
 	}

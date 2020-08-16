@@ -22,7 +22,7 @@ TEST_CASE("Vector constexpr compile test", "[Vector]")
 	};
 
 	constexpr auto vec2 = makeVector();
-	if constexpr (vec2[0] == 5)
+	if constexpr (vec2[0] == 5.f)
 	{
 	}
 }

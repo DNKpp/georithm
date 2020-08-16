@@ -1,23 +1,22 @@
-
 //          Copyright Dominic Koepke 2017 - 2020.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          https://www.boost.org/LICENSE_1_0.txt)
 
 #include "catch.hpp"
-#include "georithm/Line.hpp"
-#include "georithm/Vector.hpp"
-#include "georithm/Intersection.hpp"
-#include "georithm/Intersects.hpp"
-#include "georithm/Rect.hpp"
 #include "georithm/Bounding.hpp"
 #include "georithm/Contains.hpp"
+#include "georithm/Intersection.hpp"
+#include "georithm/Intersects.hpp"
+#include "georithm/Line.hpp"
+#include "georithm/Rect.hpp"
 #include "georithm/Utility.hpp"
+#include "georithm/Vector.hpp"
 
-#include "georithm/transform/Scale.hpp"
-#include "georithm/transform/Translate.hpp"
 #include "georithm/transform/Rotate.hpp"
+#include "georithm/transform/Scale.hpp"
 #include "georithm/transform/Shear.hpp"
+#include "georithm/transform/Translate.hpp"
 
 //TEST_CASE("Line constexpr compile test", "[Line]")
 //{
@@ -72,7 +71,7 @@ TEST_CASE("Rect intersection test", "[Rect]")
 	using namespace georithm;
 
 	using Vector2f = Vector<float, 2>;
-	AABB_t<float> rect{ {1.f, 1.f} };
+	AABB_t<float> rect{ { 1.f, 1.f } };
 
 	REQUIRE(intersects(rect.edge(0), rect));
 	REQUIRE(intersects(rect, rect.edge(0)));
@@ -117,7 +116,7 @@ TEST_CASE("Rect contains test - float", "[Rect]")
 	using namespace georithm;
 
 	using Vector2f = Vector<float, 2>;
-	AABB_t<float> rect{ {1.f, 1.f} };
+	AABB_t<float> rect{ { 1.f, 1.f } };
 
 	REQUIRE(contains(rect, rect.span() / 2));
 	REQUIRE(contains(rect, Vector2f{ 0.f, 0.5f }));
@@ -161,7 +160,7 @@ TEST_CASE("Rect make bounding rect test", "[Rect]")
 	using namespace georithm;
 
 	using Vector2 = Vector<int, 2>;
-	AABB_t<int> rect{ {1, 1} };
+	AABB_t<int> rect{ { 1, 1 } };
 
 	auto bb = boundingRect(rect);
 
@@ -182,7 +181,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 
 	SECTION("translate")
 	{
-		Rect<float, transform::Translate<Vector2F_t>> rect{ {1.f, 1.f} };
+		Rect<float, transform::Translate<Vector2F_t>> rect{ { 1.f, 1.f } };
 
 		SECTION("zero")
 		{
@@ -195,7 +194,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 		{
 			Vector2F_t position;
 			Vector2F_t translation{ -3.f, 5.f };
-			
+
 			SECTION("position 0/0 move bottom right")
 			{
 			}
@@ -226,7 +225,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 
 	SECTION("scale")
 	{
-		Rect<float, transform::Scale<Vector2F_t>> rect{ {1.f, 1.f} };
+		Rect<float, transform::Scale<Vector2F_t>> rect{ { 1.f, 1.f } };
 
 		SECTION("1:1")
 		{
@@ -262,8 +261,8 @@ TEST_CASE("Rect transform tests", "[Rect]")
 
 	SECTION("rotate")
 	{
-		Rect<float, transform::Rotate<Vector2F_t>> rect{ {1.f, 1.f} };
-		Rect<int, transform::Rotate<Vector<int, 2>>> iRect{ {1, 1 } };
+		Rect<float, transform::Rotate<Vector2F_t>> rect{ { 1.f, 1.f } };
+		Rect<int, transform::Rotate<Vector<int, 2>>> iRect{ { 1, 1 } };
 
 		auto rotation = iRect.rotation();
 
@@ -301,7 +300,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 
 	SECTION("shear")
 	{
-		Rect<float, transform::Shear<Vector2F_t>> rect{ {1.f, 1.f} };
+		Rect<float, transform::Shear<Vector2F_t>> rect{ { 1.f, 1.f } };
 		//Rect<int, transform::Rotate<Vector<int, 2>>> iRect{ {1, 1 } };
 
 		SECTION("zero")
@@ -314,7 +313,7 @@ TEST_CASE("Rect transform tests", "[Rect]")
 		SECTION("x20")
 		{
 			rect.shear() = { 20.f, 0.f };
-			
+
 			auto bb = boundingRect(rect);
 			REQUIRE(bb.position() == Vector2F_t::zero());
 			REQUIRE(bb.span() == Vector2F_t{ 21.f, 1.f });

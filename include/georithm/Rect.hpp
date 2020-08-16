@@ -13,6 +13,7 @@
 #include "Concepts.hpp"
 #include "Defines.hpp"
 #include "Line.hpp"
+#include "Vector.hpp"
 
 namespace georithm
 {
@@ -124,8 +125,8 @@ namespace georithm
 		}
 
 	private:
-		VectorType m_Position;
-		VectorType m_Span;
+		VectorType m_Position{};
+		VectorType m_Span{};
 	};
 
 	template <ValueType T>

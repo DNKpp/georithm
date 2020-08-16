@@ -21,15 +21,15 @@
 
 namespace georithm
 {
-	template <ValueType T, DimensionDescriptor_t Dim>
-	requires Cardinality<Dim>
+	template <ValueType T, DimensionDescriptor_t TDim>
+	requires Cardinality<TDim>
 	class Vector :
 		private Arithmetic
 	{
 	public:
 		using ValueType = T;
 		using DimensionDescriptorType = DimensionDescriptor_t;
-		constexpr static DimensionDescriptorType Dimensions{ Dim };
+		constexpr static DimensionDescriptorType dimensions{ TDim };
 
 		constexpr Vector() noexcept = default;
 		/*ToDo: c++20
@@ -43,7 +43,7 @@ namespace georithm
 		constexpr Vector& operator =(Vector&&) noexcept = default;
 
 		template <class... TArgs>
-		requires (sizeof...(TArgs) == Dim) && std::is_same_v<std::common_type_t<TArgs...>, T>
+		requires (sizeof...(TArgs) == TDim) && std::is_same_v<std::common_type_t<TArgs...>, T>
 		constexpr Vector(TArgs&&... args) noexcept :
 			m_Values{ std::forward<TArgs>(args)... }
 		{
@@ -51,7 +51,7 @@ namespace georithm
 
 		template <class T2>
 		requires (!std::is_same_v<T2, T> && std::convertible_to<T2, T>)
-		explicit constexpr Vector(const Vector<T2, Dim>& other) noexcept
+		explicit constexpr Vector(const Vector<T2, TDim>& other) noexcept
 		{
 			std::transform(std::begin(other),
 							std::end(other),
@@ -60,59 +60,59 @@ namespace georithm
 						);
 		}
 
-		constexpr static Vector zero() noexcept
+		[[nodiscard]] constexpr static Vector zero() noexcept
 		{
 			return make(T(0));
 		}
 
-		constexpr const ValueType& operator [](DimensionDescriptorType index) const noexcept
+		[[nodiscard]] constexpr const ValueType& operator [](DimensionDescriptorType index) const noexcept
 		{
 			return m_Values[index];
 		}
 
-		constexpr ValueType& operator [](DimensionDescriptorType index) noexcept
+		[[nodiscard]] constexpr ValueType& operator [](DimensionDescriptorType index) noexcept
 		{
 			return m_Values[index];
 		}
 
-		template <DimensionDescriptor_t Dim2 = Dim>
-		requires (1 <= Dim2)
+		template <DimensionDescriptor_t TDim2 = TDim>
+		requires (1 <= TDim2) && (TDim2 == TDim)
 		[[nodiscard]] constexpr const ValueType& x() const noexcept
 		{
 			return m_Values[0];
 		}
 
-		template <DimensionDescriptor_t Dim2 = Dim>
-		requires (1 <= Dim2)
-		constexpr ValueType& x() noexcept
+		template <DimensionDescriptor_t TDim2 = TDim>
+		requires (1 <= TDim2) && (TDim2 == TDim)
+		[[nodiscard]] constexpr ValueType& x() noexcept
 		{
 			return m_Values[0];
 		}
 
-		template <DimensionDescriptor_t Dim2 = Dim>
-		requires (2 <= Dim2)
+		template <DimensionDescriptor_t TDim2 = TDim>
+		requires (2 <= TDim2) && (TDim2 == TDim)
 		[[nodiscard]] constexpr const ValueType& y() const noexcept
 		{
 			return m_Values[1];
 		}
 
-		template <DimensionDescriptor_t Dim2 = Dim>
-		requires (2 <= Dim2)
-		constexpr ValueType& y() noexcept
+		template <DimensionDescriptor_t TDim2 = TDim>
+		requires (2 <= TDim2)
+		[[nodiscard]] constexpr ValueType& y() noexcept
 		{
 			return m_Values[1];
 		}
 
-		template <DimensionDescriptor_t Dim2 = Dim>
-		requires (3 <= Dim2)
+		template <DimensionDescriptor_t TDim2 = TDim>
+		requires (3 <= TDim2) && (TDim2 == TDim)
 		[[nodiscard]] constexpr const ValueType& z() const noexcept
 		{
 			return m_Values[2];
 		}
 
-		template <DimensionDescriptor_t Dim2 = Dim>
-		requires (3 <= Dim2)
-		constexpr ValueType& z() noexcept
+		template <DimensionDescriptor_t TDim2 = TDim>
+		requires (3 <= TDim2) && (TDim2 == TDim)
+		[[nodiscard]] constexpr ValueType& z() noexcept
 		{
 			return m_Values[2];
 		}
@@ -121,7 +121,7 @@ namespace georithm
 
 		template <class T2>
 		requires Addable<T, T2>
-		constexpr Vector& operator +=(const Vector<T2, Dim>& other) noexcept
+		constexpr Vector& operator +=(const Vector<T2, TDim>& other) noexcept
 		{
 			zip_elements(std::begin(m_Values),
 						std::end(m_Values),
@@ -133,7 +133,7 @@ namespace georithm
 
 		template <class T2>
 		requires Subtractable<T, T2>
-		constexpr Vector& operator -=(const Vector<T2, Dim>& other) noexcept
+		constexpr Vector& operator -=(const Vector<T2, TDim>& other) noexcept
 		{
 			zip_elements(std::begin(m_Values),
 						std::end(m_Values),
@@ -272,9 +272,9 @@ namespace georithm
 		}
 
 	private:
-		std::array<T, Dimensions> m_Values{};
+		std::array<T, dimensions> m_Values{};
 
-		constexpr static Vector make(const T& value) noexcept
+		[[nodiscard]] constexpr static Vector make(const T& value) noexcept
 		{
 			Vector tmp;
 			tmp.m_Values.fill(value);
@@ -287,7 +287,7 @@ namespace georithm
 
 	template <VectorObject TVector>
 	requires ConstForwardIteratable<TVector>
-	constexpr typename TVector::ValueType lengthSq(const TVector& vector) noexcept
+	[[nodiscard]] constexpr typename TVector::ValueType lengthSq(const TVector& vector) noexcept
 	{
 		return std::accumulate(std::cbegin(vector),
 								std::cend(vector),
@@ -298,28 +298,28 @@ namespace georithm
 
 	template <VectorObject TVector1, VectorObject TVector2>
 	requires ConstForwardIteratable<TVector1> && ConstForwardIteratable<TVector2> &&
-	(TVector1::Dimensions == TVector2::Dimensions) &&
+	(TVector1::dimensions == TVector2::dimensions) &&
 	Multiplicable<typename TVector1::ValueType, typename TVector2::ValueType>
-	constexpr typename TVector1::ValueType scalarProduct(const TVector1& lhs, const TVector2& rhs) noexcept
+	[[nodiscard]] constexpr typename TVector1::ValueType scalarProduct(const TVector1& lhs, const TVector2& rhs) noexcept
 	{
 		return std::inner_product(std::cbegin(lhs), std::cend(lhs), std::cbegin(rhs), typename TVector1::ValueType(0));
 	}
 
 	template <VectorObject TVector>
-	constexpr typename TVector::ValueType length(const TVector& vector) noexcept
+	[[nodiscard]] constexpr typename TVector::ValueType length(const TVector& vector) noexcept
 	{
 		return static_cast<typename TVector::ValueType>(std::sqrt(lengthSq(vector)));
 	}
 
 	template <class T2, VectorObject TVector>
-	constexpr T2 length(const TVector& vector) noexcept
+	[[nodiscard]] constexpr T2 length(const TVector& vector) noexcept
 	{
 		return static_cast<T2>(std::sqrt(lengthSq(vector)));
 	}
 
 	template <VectorObject TVector>
 	requires std::floating_point<typename TVector::ValueType>
-	constexpr TVector normalize(TVector vector) noexcept
+	[[nodiscard]] constexpr TVector normalize(TVector vector) noexcept
 	{
 		assert(vector != TVector::zero());
 
@@ -329,7 +329,7 @@ namespace georithm
 
 	template <VectorObject TVector>
 	requires std::floating_point<typename TVector::ValueType> || std::signed_integral<typename TVector::ValueType>
-	constexpr TVector abs(TVector vector) noexcept
+	[[nodiscard]] constexpr TVector abs(TVector vector) noexcept
 	{
 		for (auto& el : vector)
 			el = std::abs(el);
@@ -338,7 +338,7 @@ namespace georithm
 
 	template <NDimensionalVectorObject<2> TVector>
 	requires std::floating_point<typename TVector::ValueType>
-	constexpr TVector rotate(const TVector& vector, typename TVector::ValueType radian) noexcept
+	[[nodiscard]] constexpr TVector rotate(const TVector& vector, typename TVector::ValueType radian) noexcept
 	{
 		auto sin = std::sin(radian);
 		auto cos = std::cos(radian);
@@ -347,7 +347,7 @@ namespace georithm
 
 	template <NDimensionalVectorObject<2> TVector>
 	requires std::signed_integral<typename TVector::ValueType>
-	constexpr TVector rotate(TVector vector, double radian) noexcept
+	[[nodiscard]] constexpr TVector rotate(TVector vector, double radian) noexcept
 	{
 		auto rotated = rotate(static_cast<Vector<double, 2>>(vector), radian);
 		zip_elements(std::begin(vector),

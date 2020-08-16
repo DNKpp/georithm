@@ -12,9 +12,9 @@
 #include <optional>
 #include <tuple>
 
-#include "Utility.hpp"
 #include "Concepts.hpp"
 #include "GeometricTraits.hpp"
+#include "Utility.hpp"
 
 namespace georithm::detail
 {
@@ -35,7 +35,9 @@ namespace georithm::detail
 
 	template <NDimensionalLineObject<2> TLine1, NDimensionalLineObject<2> TLine2>
 	constexpr std::tuple<LineIntersectionResult, typename GeometricTraits<TLine1>::ValueType, typename GeometricTraits<TLine2>::ValueType> intersectionImpl(
-		const TLine1& lhs, const TLine2& rhs) noexcept
+		const TLine1& lhs,
+		const TLine2& rhs
+	) noexcept
 	{
 		// Credits goes here: http://www-cs.ccny.cuny.edu/~wolberg/capstone/intersection/Intersection%20point%20of%20two%20lines.html
 		assert(!isNull(lhs) && !isNull(rhs));
@@ -81,19 +83,22 @@ namespace georithm::detail
 
 	template <NDimensionalLineObject<2> TLine, NDimensionalPolygonalObject<2> TPolygon>
 	constexpr std::optional<typename GeometricTraits<TLine>::ValueType> intersectionImpl(
-		const TLine& line, const TPolygon& polygon) noexcept
+		const TLine& line,
+		const TPolygon& polygon
+	) noexcept
 	{
 		assert(!isNull(line) && !isNull(polygon));
 
 		using Value_t = typename GeometricTraits<TLine>::ValueType;
 		std::optional<Value_t> smallestDist;
-		forEachIntersectionImpl(line, polygon,
+		forEachIntersectionImpl(line,
+								polygon,
 								[&smallestDist](Value_t lineDist, const TLine& edge, Value_t edgeDist)
 								{
 									if (!smallestDist || std::abs(lineDist) < std::abs(*smallestDist))
 										smallestDist = lineDist;
 								}
-		);
+								);
 		return smallestDist;
 	}
 
