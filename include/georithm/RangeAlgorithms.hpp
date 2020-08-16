@@ -35,7 +35,8 @@ namespace georithm
 	{
 		while (first != last)
 		{
-			*first = std::invoke(op, *first, *secFirst);
+			//*first = std::invoke(op, *first, *secFirst);
+			*first = op(*first, *secFirst);
 			++first;
 			++secFirst;
 		}
