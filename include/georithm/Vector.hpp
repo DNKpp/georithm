@@ -371,7 +371,7 @@ namespace georithm
 	[[nodiscard]] TVector abs(TVector vector)
 	{
 		using T = typename TVector::ValueType;
-		return transmute(vector, [](auto element) { return std::abs(element); });
+		return transmute(vector, [](T element) { return std::abs(element); });
 	}
 
 	template <VectorObject TVector>
