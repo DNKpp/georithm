@@ -256,6 +256,12 @@ namespace georithm::detail
 		auto position = topLeftBounding(object);
 		return { position, bottomRightBounding(object) - position };
 	}
+
+	template <NDimensionalVectorObject<2> TVector>
+	[[nodiscard]] constexpr AABB_t<typename TVector::ValueType> boundingRect(const TVector& vector1, const TVector& vector2) noexcept
+	{
+		return { transmuteElementWise(vector1, vector2, [](const auto& lhs, const auto& rhs) { return std::min(lhs, rhs); }), abs(vector1 - vector2) };
+	}
 }
 
 namespace georithm
@@ -312,6 +318,12 @@ namespace georithm
 	[[nodiscard]] constexpr AABB_t<typename GeometricTraits<TObj>::ValueType> boundingRect(const TObj& object) noexcept
 	{
 		return detail::boundingRect(object);
+	}
+
+	template <NDimensionalVectorObject<2> TVector>
+	[[nodiscard]] constexpr AABB_t<typename TVector::ValueType> boundingRect(const TVector& vector1, const TVector& vector2) noexcept
+	{
+		return detail::boundingRect(vector1, vector2);
 	}
 }
 
