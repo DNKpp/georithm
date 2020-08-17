@@ -336,13 +336,59 @@ namespace georithm
 		return vector /= length;
 	}
 
+	// unfortunately there already exists a namespace called transform
+	template <VectorObject TVector, invocable_r<typename TVector::ValueType, typename TVector::ValueType> TUnaryOp>
+	[[nodiscard]] TVector transmute(TVector vector, TUnaryOp op) noexcept(std::is_nothrow_invocable_v<TUnaryOp, typename TVector::ValueType>)
+	{
+		std::transform(std::cbegin(vector),
+						std::cend(vector),
+						std::begin(vector),
+						op
+					);
+		return vector;
+	}
+
+	template <VectorObject TVector>
+	[[nodiscard]] TVector transmute(TVector vector,
+									typename TVector::ValueType (*op)(typename TVector::ValueType)
+	) noexcept(std::is_nothrow_invocable_v<decltype(op), typename TVector::ValueType>)
+	{
+		return transmute(vector, [op](typename TVector::ValueType element) { return op(element); });
+	}
+
 	template <VectorObject TVector>
 	requires std::floating_point<typename TVector::ValueType> || std::signed_integral<typename TVector::ValueType>
-	[[nodiscard]] constexpr TVector abs(TVector vector) noexcept
+	[[nodiscard]] TVector abs(TVector vector)
 	{
-		for (auto& el : vector)
-			el = std::abs(el);
-		return vector;
+		return transmute(vector, &std::abs);
+	}
+
+	template <VectorObject TVector>
+	[[nodiscard]] constexpr TVector ceil(TVector vector) noexcept
+	{
+		using T = typename TVector::ValueType;
+		return transmute(vector, [](T element) { return static_cast<T>(std::ceil(element)); });
+	}
+
+	template <VectorObject TVector>
+	[[nodiscard]] constexpr TVector floor(TVector vector) noexcept
+	{
+		using T = typename TVector::ValueType;
+		return transmute(vector, [](T element) { return static_cast<T>(std::floor(element)); });
+	}
+
+	template <VectorObject TVector>
+	[[nodiscard]] constexpr TVector trunc(TVector vector) noexcept
+	{
+		using T = typename TVector::ValueType;
+		return transmute(vector, [](T element) { return static_cast<T>(std::trunc(element)); });
+	}
+
+	template <VectorObject TVector>
+	[[nodiscard]] constexpr TVector round(TVector vector) noexcept
+	{
+		using T = typename TVector::ValueType;
+		return transmute(vector, [](T element) { return static_cast<T>(std::round(element)); });
 	}
 
 	template <NDimensionalVectorObject<2> TVector>
@@ -359,12 +405,7 @@ namespace georithm
 	[[nodiscard]] constexpr TVector rotate(TVector vector, double radian) noexcept
 	{
 		const auto rotated = rotate(static_cast<Vector<double, 2>>(vector), radian);
-		std::transform(std::cbegin(rotated),
-						std::cend(rotated),
-						std::begin(vector),
-						[](double element) { return static_cast<typename TVector::ValueType>(std::llround(element)); }
-					);
-		return vector;
+		return static_cast<TVector>(round(rotated));
 	}
 }
 
