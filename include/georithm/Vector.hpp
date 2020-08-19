@@ -60,6 +60,13 @@ namespace georithm
 						);
 		}
 
+		[[nodiscard]] constexpr static Vector make(const T& value) noexcept
+		{
+			Vector tmp;
+			tmp.m_Values.fill(value);
+			return tmp;
+		}
+
 		[[nodiscard]] constexpr static Vector zero() noexcept
 		{
 			return make(T(0));
@@ -275,13 +282,6 @@ namespace georithm
 
 	private:
 		std::array<T, dimensions> m_Values{};
-
-		[[nodiscard]] constexpr static Vector make(const T& value) noexcept
-		{
-			Vector tmp;
-			tmp.m_Values.fill(value);
-			return tmp;
-		}
 	};
 
 	template <class... T>
@@ -348,19 +348,30 @@ namespace georithm
 		return vector;
 	}
 
-	template <VectorObject TVector>
-	[[nodiscard]] TVector transmute(TVector vector,
-									typename TVector::ValueType (*op)(typename TVector::ValueType)
-	) noexcept(std::is_nothrow_invocable_v<decltype(op), typename TVector::ValueType>)
+	template <VectorObject TVector1, VectorObject TVector2, invocable_r<
+		typename TVector1::ValueType, typename TVector1::ValueType, typename TVector2::ValueType> TBinaryOp>
+	requires (TVector1::dimensions == TVector2::dimensions)
+	[[nodiscard]] TVector1 transmuteElementWise(TVector1 lhs,
+												const TVector2 rhs,
+												TBinaryOp op
+	)
+	noexcept(std::is_nothrow_invocable_v<TBinaryOp, typename TVector1::ValueType, typename TVector2::ValueType>)
 	{
-		return transmute(vector, [op](typename TVector::ValueType element) { return op(element); });
+		std::transform(std::cbegin(lhs),
+						std::cend(lhs),
+						std::cbegin(rhs),
+						std::begin(lhs),
+						op
+					);
+		return lhs;
 	}
 
 	template <VectorObject TVector>
 	requires std::floating_point<typename TVector::ValueType> || std::signed_integral<typename TVector::ValueType>
 	[[nodiscard]] TVector abs(TVector vector)
 	{
-		return transmute(vector, &std::abs);
+		using T = typename TVector::ValueType;
+		return transmute(vector, [](T element) { return std::abs(element); });
 	}
 
 	template <VectorObject TVector>
