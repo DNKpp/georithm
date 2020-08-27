@@ -56,7 +56,7 @@ namespace georithm
 	};
 
 	template <class T, DimensionDescriptor_t TDim>
-	concept NDimensionalObject = GeometricObject<T>/* && GeometricTraits<T>::dimensions == TDim*/;
+	concept NDimensionalObject = GeometricObject<T> && GeometricTraits<T>::dimensions == TDim;
 
 	template <class T>
 	concept LineObject = GeometricObject<T> && requires(const std::remove_cvref_t<T>& line)
