@@ -13,6 +13,7 @@
 
 #include "georithm/Concepts.hpp"
 #include "georithm/Utility.hpp"
+#include "georithm/Intersection.hpp"
 
 namespace georithm::detail
 {
