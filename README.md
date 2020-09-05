@@ -1,15 +1,16 @@
 # Georithm C++20 library
 ![Build & Run Test](https://github.com/DNKpp/georithm/workflows/Build%20&%20Run%20Test/badge.svg?branch=master)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/da5fb68768384f4bafc13f17e04e82fc)](https://www.codacy.com/manual/DNKpp/georithm?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=DNKpp/georithm&amp;utm_campaign=Badge_Grade)
 
 ## Author
 Dominic Koepke  
-Mail: DNKpp2011@gmail.com
+Mail: [DNKpp2011@gmail.com](mailto:dnkpp2011@gmail.com)
 
 ## License
 
 [BSL-1.0](https://github.com/DNKpp/CitiesSkylines_AdvancedOutsideConnection/blob/master/LICENSE_1_0.txt) (free, open source)
 
-```
+```text
           Copyright Dominic Koepke 2020 - 2020.
  Distributed under the Boost Software License, Version 1.0.
     (See accompanying file LICENSE_1_0.txt or copy at
@@ -29,7 +30,7 @@ The shapes and algorithms of this library use constexpr as often as
 possible, thus it is possible to use everything without runtime-overhead but
 stay expressive as usual code.
 
-This is a working repository, this means, currently it doesn't have a "stable-version".
+This is a development repository, this means, currently it doesn't have a "stable-version".
 This might change in the future but for now it is simply a prove of concept.
 I'll do my best to provide a correct and clean library but sometimes it might
 happen, that a commit contains a syntax error or any other bug. If you are then
